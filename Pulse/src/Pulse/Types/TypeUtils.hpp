@@ -1,40 +1,48 @@
 #pragma once
 
+#include <ranges>
 #include <type_traits>
+
+#include "Pulse/Types/Concepts.hpp"
 
 namespace Pulse::Types
 {
 
+    //////////////////////////////////////////////////
+    // Types
+    //////////////////////////////////////////////////
     template<typename T>
-    struct CleanImpl
+    struct TypeManipulation
     {
-        using Type = std::decay_t<T>;
+    public:
+        using CleanType = std::decay_t<T>;
+        using AddPointer = std::add_pointer_t<std::remove_reference_t<T>>;
+        using AddReference = std::add_lvalue_reference_t<std::remove_reference_t<T>>;
+
+        using RemoveConstAndVolatile = std::remove_cv_t<T>;
     };
 
     // Removes const and & so const std::string& -> std::string
     template<typename T>
-    using Clean = CleanImpl<T>::Type;
-
-    template<typename T>
-    struct AddPointerImpl 
-    {
-        using Type = T*;
-    };
+    using Clean = TypeManipulation<T>::CleanType;
 
     // Adds pointer to T so int -> int*
     template<typename T>
-    using AddPointer = AddPointerImpl<T>::Type;
-
-    template<typename T>
-    struct AddReferenceImpl
-    {
-        using Type = T&;
-    };
+    using AddPointer = TypeManipulation<T>::AddPointer;
 
     // Adds reference to T so int -> int&
     template<typename T>
-    using AddReference = AddReferenceImpl<T>::Type;
+    using AddReference = TypeManipulation<T>::AddReference;
 
+    // Removes const/volatile from type so const int -> int && const volatile int -> int
+    template<typename T>
+    using RemoveConstAndVolatile = TypeManipulation<T>::RemoveConstAndVolatile;
+
+
+
+    //////////////////////////////////////////////////
+    // Other
+    //////////////////////////////////////////////////
     template <typename Base, typename Derived>
     struct InheritsFromImpl : std::is_base_of<Base, Derived> {};
 
@@ -53,4 +61,5 @@ namespace Pulse::Types
 
     template<typename... Types>
     struct TypeGroup {};
+
 }

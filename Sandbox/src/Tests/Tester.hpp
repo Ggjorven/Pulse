@@ -6,10 +6,6 @@
 
 #include "Tests/Test.hpp"
 
-// All tests
-#include "Tests/Core.hpp"
-#include "Tests/Types.hpp"
-
 using namespace Pulse;
 
 class Tester
@@ -18,22 +14,9 @@ public:
 	template<typename T>
 	static void Run() requires Types::Concepts::InheritsFrom<Test, T>;
 
-	// Note: Manually updated.
-	inline static void RunAll()
-	{
-		RunAll<CoreTest, TypesTest>();
-	}
-
-	template<typename... Tests>
-	static void RunAll();
+	template<typename FirstTest, typename SecondTest, typename... Tests> // We use so many template arguments to force multiple tests
+	static void Run();
 };
-
-// Function for running multiple tests
-template<typename... Tests>
-inline static void Tester::RunAll()
-{
-	(Tester::Run<Tests>(), ...);  // Fold expression to call Run for each Test type
-}
 
 // Function for running a test
 template<typename T>
@@ -47,4 +30,14 @@ inline void Tester::Run() requires Types::Concepts::InheritsFrom<Test, T>
 		Logger::Log(LogLevel::Error, "Test: {0} failed. Message: {1}", T::Name, result.Message);
 	else
 		Logger::Log(LogLevel::Info, "Test: {0} succeeded.", T::Name);
+}
+
+// Function for running multiple tests
+template<typename FirstTest, typename SecondTest, typename... Tests>
+inline static void Tester::Run()
+{
+	Tester::Run<FirstTest>();
+	Tester::Run<SecondTest>();
+
+	(Tester::Run<Tests>(), ...);  // Fold expression to call Run for each Test type
 }

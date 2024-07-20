@@ -2,8 +2,14 @@
 #include <variant>
 
 #include <Pulse/Core/Logging.hpp>
+#include <Pulse/Classes/Vector.hpp>
 
 #include "Tests/Tester.hpp"
+
+// All tests
+#include "Tests/Core.hpp"
+#include "Tests/Types.hpp"
+#include "Tests/Classes.hpp"
 
 static void LogCallback(Pulse::LogLevel level, std::string message)
 {
@@ -29,9 +35,13 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 
 int main(int argc, char* argv[])
 {
-	Pulse::Logger::Init(&LogCallback);
+	using namespace Pulse;
 
-	Tester::RunAll();
+	Logger::Init(&LogCallback);
+
+	Tester::Run<CoreTest>();
+	Tester::Run<TypesTest>();
+	Tester::Run<ClassesTest>();
 
 	return 0;
 }
