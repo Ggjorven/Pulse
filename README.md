@@ -51,6 +51,7 @@
 
 3. Generate make files:
     ```sh
+    chmod +x gen-make-linux.sh
     ./gen-make-linux.sh
     ```
 
@@ -72,9 +73,9 @@
 ### Linux
 1. Navigate to the root of the directory
 2. Open a terminal
-3. Call make with desired configuration (Debug or Release):
+3. Call make with desired configuration (debug or release):
     ```sh
-    make config=Release
+    make config=release
     ```
 4. Build files can be in the bin/%Config#-linux/ folder.
 5. (Optional) Open a terminal and run the Sandbox project:

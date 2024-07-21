@@ -26,6 +26,7 @@
 #endif
 
 // Check for proper C++ version
+/* // Note: Version checking doesn't work yet. // TODO: ...
 #if defined(_MSC_VER)
 	#if _MSC_VER < 1933
 		#error Pulse: Compiler doesnt support C++23
@@ -37,3 +38,4 @@
 #else
 	#error Pulse: Unknown compiler, cannot determine C++23 support.
 #endif
+*/

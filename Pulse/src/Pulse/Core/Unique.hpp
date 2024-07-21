@@ -22,17 +22,17 @@ namespace Pulse
         
         Unique& operator = (Unique&& other);
 
-        inline T& operator * () const { return *m_Instance; }
+        inline T& operator * () { return *m_Instance; }
         inline const T& operator * () const { return *m_Instance; }
 
-        inline T* operator -> () const { return m_Instance; }
+        inline T* operator -> () { return m_Instance; }
         inline const T* operator -> () const { return m_Instance; }
 
         inline operator bool() { return m_Instance != nullptr; }
         inline operator bool() const { return m_Instance != nullptr; }
 
         // Methods
-        inline T* Raw() const { return m_Instance; }
+        inline T* Raw() { return m_Instance; }
         inline const T* Raw() const { return m_Instance; }
 
         T* Release();
