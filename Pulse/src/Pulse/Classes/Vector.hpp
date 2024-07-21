@@ -5,6 +5,7 @@
 #include <functional>
 #include <initializer_list>
 
+#include "Pulse/Core/Core.hpp"
 #include "Pulse/Classes/Views.hpp"
 
 namespace Pulse
@@ -15,6 +16,7 @@ namespace Pulse
 	// Vector Functions
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
+#if defined(PULSE_PLATFORM_WINDOWS) // Vector is not supported on Linux yet
 	template<typename T>
 	class Vector
 	{
@@ -255,5 +257,6 @@ namespace Pulse
 	{
 		return Views::TransformView(m_Vector, function);
 	}
+#endif
 
 }

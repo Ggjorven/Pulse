@@ -55,6 +55,7 @@ namespace Pulse::Types
     {
         using Iterator = std::ranges::iterator_t<T>;
         using Sentinel = std::ranges::sentinel_t<T>;
+        using RangeValue = std::ranges::range_value_t<T>;
     };
 
     template<typename Range>
@@ -62,6 +63,7 @@ namespace Pulse::Types
     {
         using Iterator = RangeTraitsImpl<Range>::Iterator;
         using Sentinel = RangeTraitsImpl<Range>::Sentinel; // Sentinel is the end of the iterator
+        using RangeValue = RangeTraitsImpl<Range>::RangeValue;
     };
 
     //////////////////////////////////////////////////

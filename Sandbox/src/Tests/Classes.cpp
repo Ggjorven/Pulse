@@ -1,9 +1,15 @@
 #include "Classes.hpp"
 
 #include <Pulse/Core/Logging.hpp>
+#include <Pulse/Core/Loop.hpp>
 #include <Pulse/Classes/Vector.hpp>
 
-ClassesTest::ClassesTest()
+#include <iostream>
+#include <iterator>
+#include <ranges>
+#include <type_traits>
+
+ClassesTest::ClassesTest() 
 {
 }
 
@@ -41,17 +47,13 @@ TestResult ClassesTest::Execute()
 	}
 	*/
 
-	Logger::Log(LogLevel::Trace, "-------");
-
-	// Default
+#if defined(PULSE_PLATFORM_WINDOWS) // Vector is not supported on linux yet
+	Vector<int> vec = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	Loop::ForEach(vec, [](int& n) 
 	{
-		std::vector<int> vecOld = { 1, 2, 3, 4 };
-		auto view = vecOld | std::views::transform([](int n) -> int { return n * 2; });
-		auto view2 = view | std::views::filter([](int n) -> bool { return ((n == 2) || (n == 4)); });
-
-		for (auto a : view2)
-			Logger::Log(LogLevel::Trace, "{0}", a);
-	}
+		Logger::Log(LogLevel::Trace, "{0}", n);
+	});
+#endif
 
 	return { .Succeeded = !failed };
 }

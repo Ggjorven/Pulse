@@ -56,11 +56,32 @@
 
 ## Usage
 
-### Use Binaries
-// TODO
+### Windows
+- Visual Studio 17 2022:
+    1. Navigate to the root of the directory
+    2. Open the Pulse.sln file
+    3. Start building in your desired configuration
+    4. Build files can be in the bin/%Config#-windows/ folder.
+    5. (Optional) Open a terminal and run the Sandbox project:
+    ```sh
+    ./Sandbox.exe
+    ``` 
+- MinGW Make:
+    // TODO
 
-### Build Source Code
-// TODO
+### Linux
+1. Navigate to the root of the directory
+2. Open a terminal
+3. Call make with desired configuration (Debug or Release):
+    ```sh
+    make config=Release
+    ```
+4. Build files can be in the bin/%Config#-linux/ folder.
+5. (Optional) Open a terminal and run the Sandbox project:
+    ```sh
+    chmod +x Sandbox
+    ./Sandbox
+    ```
 
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request with your changes. Make sure to follow the project's coding standards and optionally include tests for new features.

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <variant>
 
 #include <Pulse/Core/Logging.hpp>
 #include <Pulse/Classes/Vector.hpp>

@@ -34,7 +34,7 @@ inline void Tester::Run() requires Types::Concepts::InheritsFrom<Test, T>
 
 // Function for running multiple tests
 template<typename FirstTest, typename SecondTest, typename... Tests>
-inline static void Tester::Run()
+inline void Tester::Run()
 {
 	Tester::Run<FirstTest>();
 	Tester::Run<SecondTest>();
