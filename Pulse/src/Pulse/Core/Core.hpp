@@ -39,3 +39,16 @@
 	#error Pulse: Unknown compiler, cannot determine C++23 support.
 #endif
 */
+
+// Define debug break // To disable debug breaks #define PULSE_DISABLE_ASSERT
+#if !(defined(PULSE_DISABLE_ASSERT))
+	#if defined(_MSC_VER)
+		#define PULSE_DEBUG_BREAK() __debugbreak()
+	#elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
+		#include <signal.h>
+		#define PULSE_DEBUG_BREAK() raise(SIGTRAP)
+	#else
+		#include <assert.h>
+		#define PULSE_DEBUG_BREAK() assert(0)
+	#endif
+#endif

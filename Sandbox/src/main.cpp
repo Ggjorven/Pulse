@@ -1,8 +1,8 @@
 #include <iostream>
 
+#include <Pulse/Core/Core.hpp>
 #include <Pulse/Core/Logging.hpp>
-#include <Pulse/Classes/Vector.hpp>
-
+ 
 #include "Tests/Tester.hpp"
 
 // All tests
@@ -32,11 +32,19 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 	}
 }
 
+static void AssertCallback(bool success, std::string message)
+{
+	if (success) return;
+
+	Pulse::Logger::Log(LogLevel::Fatal, "Assertion failed: {0}", message);
+	PULSE_DEBUG_BREAK();
+}
+
 int main(int argc, char* argv[])
 {
 	using namespace Pulse;
 
-	Logger::Init(&LogCallback);
+	Logger::Init(&LogCallback, &AssertCallback);
 
 	Tester::Run<CoreTest>();
 	Tester::Run<TypesTest>();

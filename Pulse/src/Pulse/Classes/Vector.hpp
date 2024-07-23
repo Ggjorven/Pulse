@@ -2,261 +2,339 @@
 
 #include <vector>
 #include <ranges>
+#include <memory>
+#include <cstdint>
+#include <algorithm>
 #include <functional>
 #include <initializer_list>
 
 #include "Pulse/Core/Core.hpp"
-#include "Pulse/Classes/Views.hpp"
+#include "Pulse/Core/Logging.hpp"
 
 namespace Pulse
 {
 
-	///////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////
-	// Vector Functions
-	///////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////
-#if defined(PULSE_PLATFORM_WINDOWS) // Vector is not supported on Linux yet
+
 	template<typename T>
 	class Vector
 	{
 	public:
-		// Defines
-		using Allocator = std::allocator<T>;
+		using Iterator = T*;
+		using ConstIterator = const T*;
 
-		using Alty = std::_Rebind_alloc_t<Allocator, T>;
-		using AltyTraits = std::allocator_traits<Alty>;
-
-		using Pointer = typename AltyTraits::pointer;
-		using CPointer = typename AltyTraits::const_pointer;
-		using SizeType = typename AltyTraits::size_type;
-		using DifferenceType = typename AltyTraits::difference_type;
-
-		using ScaryVal = std::_Vector_val<std::conditional_t<std::_Is_simple_alloc_v<Alty>, std::_Simple_types<T>,
-			std::_Vec_iter_types<T, SizeType, DifferenceType, Pointer, CPointer>>>;
-
-		using Iterator = std::_Vector_iterator<ScaryVal>;
-		using CIterator = std::_Vector_const_iterator<ScaryVal>;
-		using RIterator = std::reverse_iterator<Iterator>;
-		using CRIterator = std::reverse_iterator<CIterator>;
+		inline static constinit const size_t s_DefaultCapacity = 4ull;
+	
+		// Removes item when result -> true
+		inline constinit static decltype(std::views::filter)& Filter = std::views::filter;
+		inline constinit static decltype(std::views::transform)& Transform = std::views::transform;
 
 	public:
 		// Constructors
-		constexpr Vector() = default;
-		constexpr Vector(size_t size);
-		constexpr Vector(size_t size, const T& initialValue);
-		constexpr Vector(const std::vector<T>& vector);
-		constexpr Vector(const std::initializer_list<T>& list);
-		constexpr ~Vector() = default;
+		constexpr Vector();
+		constexpr Vector(size_t capacity);
+		constexpr Vector(size_t capacity, T&& initialValue);
+		constexpr Vector(const Vector<T>& other);
+		constexpr Vector(const std::initializer_list<T>& elements);
+		constexpr ~Vector();
 
 		// Operators
-		constexpr Vector<T>& operator = (const std::vector<T>& vector);
-		constexpr Vector<T>& operator = (const std::initializer_list<T>& list);
-		constexpr Vector<T>& operator = (const Vector<T>& vector);
-
-		constexpr bool operator == (const std::vector<T>& vector);
-		constexpr bool operator == (const std::initializer_list<T>& list);
-		constexpr bool operator == (const Vector<T>& vector);
+		constexpr Vector& operator = (const Vector<T>& other);
+		constexpr Vector& operator = (const std::initializer_list<T>& elements);
 
 		constexpr T& operator [] (size_t index);
-
-		// Iterators
-		constexpr Iterator begin();
-		constexpr CIterator begin() const;
-
-		constexpr Iterator end();
-		constexpr CIterator end() const;
-
-		constexpr RIterator rbegin();
-		constexpr CRIterator rbegin() const;
-
-		constexpr RIterator rend();
-		constexpr CRIterator rend() const;
-
-		constexpr CIterator cbegin() const;
-		constexpr CIterator cend() const;
-		constexpr CRIterator crbegin() const;
-		constexpr CRIterator crend() const;
+		constexpr const T& operator [] (size_t index) const;
 
 		// Methods
-		constexpr size_t Size() const;
-		constexpr size_t Capacity() const;
+		inline constexpr Iterator begin() { return m_Array; }
+		inline constexpr ConstIterator begin() const { m_Array; }
+		inline constexpr Iterator end() { return m_Array + m_Size; }
+		inline constexpr ConstIterator end() const { return m_Array + m_Size; }
 
-		constexpr bool Empty() const;
+		// Custom Methods
+		inline constexpr size_t Size() const { return m_Size; }
+		inline constexpr size_t Capacity() const { return m_Capacity; }
+
+		inline constexpr bool Empty() const { return (m_Size == 0ull); }
 
 		constexpr void Clear();
 
 		constexpr void Reserve(size_t capacity);
 		constexpr void Resize(size_t size);
 
-		constexpr T* Data();
+		inline constexpr T* Data() { return m_Array; }
 
-		constexpr void Push(const T& value);
-		constexpr void Emplace(const T& value);
-		constexpr void Emplace(const T& value, size_t index);
+		constexpr void PushBack(const T& value);
+		constexpr void PushBack(T&& value); // rvalue overload
 
-		constexpr void Pop();
+		template<typename... Args>
+		constexpr void Emplace(size_t index, Args&&... args);
+		template<typename... Args>
+		constexpr void EmplaceBack(Args&&... args);
 
-		// Custom Methods
-		using TranformFunction = std::function<T(T)>;
-		[[ nodiscard ]] Views::TransformView<std::vector<T>, TranformFunction> Transform(TranformFunction function);
+		constexpr void PopBack();
 
 	private:
-		std::vector<T> m_Vector;
+		// Private Methods
+		constexpr void Create(size_t capacity);
+		constexpr void Create(size_t capacity, T&& initialValue);
+		constexpr void Copy(const T* copyFrom, size_t copySize);
+		constexpr void Destroy();
+
+	private:
+		T* m_Array = nullptr;
+
+		size_t m_Size = 0ull;
+		size_t m_Capacity = 0ull;
 	};
-
-
 
 	///////////////////////////////////////////////////////////
 	// Constructors
 	///////////////////////////////////////////////////////////
 	template<typename T>
-	inline constexpr Vector<T>::Vector(size_t size)
-		: m_Vector(size) {}
+	constexpr Vector<T>::Vector()
+	{
+		Create(s_DefaultCapacity);
+	}
 
 	template<typename T>
-	inline constexpr Vector<T>::Vector(size_t size, const T& initialValue)
-		: m_Vector(size, initialValue) {}
+	constexpr Vector<T>::Vector(size_t capacity)
+	{
+		Create(capacity);
+	}
 
 	template<typename T>
-	inline constexpr Vector<T>::Vector(const std::vector<T>& vector)
-		: m_Vector(vector) {}
+	constexpr Vector<T>::Vector(size_t capacity, T&& initialValue)
+	{
+		// If an array exists, delete it.
+		if (m_Array)
+			Destroy();
+
+		m_Array = new T[capacity];
+
+		// Initialize elements using move constructor
+		for (size_t i = 0; i < capacity; ++i)
+			new (&m_Array[i]) T(std::move(initialValue)); // Move initialization
+
+		m_Size = 0ull;
+		m_Capacity = capacity;
+	}
 
 	template<typename T>
-	inline constexpr Vector<T>::Vector(const std::initializer_list<T>& list)
-		: m_Vector(list) {}
+	constexpr Vector<T>::Vector(const Vector<T>& other)
+	{
+		Copy(other.m_Array, other.m_Size);
+	}
+
+	template<typename T>
+	constexpr Vector<T>::Vector(const std::initializer_list<T>& elements)
+	{
+		Copy(elements.begin(), elements.size());
+	}
+
+	template<typename T>
+	constexpr Vector<T>::~Vector()
+	{
+		if (m_Array)
+			Destroy();
+	}
 
 	///////////////////////////////////////////////////////////
 	// Operators
 	///////////////////////////////////////////////////////////
 	template<typename T>
-	inline constexpr Vector<T>& Vector<T>::operator = (const std::vector<T>& vector)
+	constexpr Vector<T>& Vector<T>::operator = (const Vector<T>& other)
 	{
-		m_Vector = vector;
+		Copy(other.m_Array, other.m_Size);
 		return *this;
 	}
 
 	template<typename T>
-	inline constexpr Vector<T>& Vector<T>::operator = (const std::initializer_list<T>& list)
+	constexpr Vector<T>& Vector<T>::operator = (const std::initializer_list<T>& elements)
 	{
-		m_Vector = list;
+		Copy(elements.begin(), elements.size());
 		return *this;
 	}
 
 	template<typename T>
-	inline constexpr Vector<T>& Vector<T>::operator = (const Vector<T>& vector)
+	constexpr T& Vector<T>::operator [] (size_t index)
 	{
-		m_Vector = vector.m_Vector;
-		return *this;
+		Logger::Assert((index < m_Size), "Tried to access element at index {0}, but size is {1}", index, m_Size);
+
+		return m_Array[index];
 	}
 
 	template<typename T>
-	inline constexpr bool Vector<T>::operator == (const std::vector<T>& vector)
+	constexpr const T& Vector<T>::operator [] (size_t index) const
 	{
-		return m_Vector == vector;
+		Logger::Assert((index < m_Size), "Tried to access element at index {0}, but size is {1}", index, m_Size);
+
+		return m_Array[index];
 	}
-
-	template<typename T>
-	inline constexpr bool Vector<T>::operator == (const std::initializer_list<T>& list)
-	{
-		return m_Vector == std::vector(list);
-	}
-
-	template<typename T>
-	inline constexpr bool Vector<T>::operator == (const Vector<T>& vector)
-	{
-		return m_Vector == vector.m_Vector;
-	}
-
-	template<typename T>
-	inline constexpr T& Vector<T>::operator [] (size_t index)
-	{
-		return m_Vector[index];
-	}
-
-	///////////////////////////////////////////////////////////
-	// Iterators
-	///////////////////////////////////////////////////////////
-	template<typename T>
-	inline constexpr Vector<T>::Iterator Vector<T>::begin() { return m_Vector.begin(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CIterator Vector<T>::begin() const { return m_Vector.begin(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::Iterator Vector<T>::end() { return m_Vector.end(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CIterator Vector<T>::end() const { return m_Vector.end(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::RIterator Vector<T>::rbegin() { return m_Vector.rbegin(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CRIterator Vector<T>::rbegin() const { return m_Vector.rbegin(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::RIterator Vector<T>::rend() { return m_Vector.rend(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CRIterator Vector<T>::rend() const { return m_Vector.rend(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CIterator Vector<T>::cbegin() const { return m_Vector.cbegin(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CIterator Vector<T>::cend() const { return m_Vector.end(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CRIterator Vector<T>::crbegin() const { return m_Vector.crbegin(); }
-
-	template<typename T>
-	inline constexpr Vector<T>::CRIterator Vector<T>::crend() const { return m_Vector.crend(); }
 
 	///////////////////////////////////////////////////////////
 	// Methods
 	///////////////////////////////////////////////////////////
-	template<typename T>
-	inline constexpr size_t Vector<T>::Size() const { return m_Vector.size(); }
-
-	template<typename T>
-	inline constexpr size_t Vector<T>::Capacity() const { return m_Vector.capacity(); }
-
-	template<typename T>
-	inline constexpr bool Vector<T>::Empty() const { return m_Vector.empty(); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Clear() { return m_Vector.clear(); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Reserve(size_t capacity) { m_Vector.reserve(capacity); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Resize(size_t size) { m_Vector.resize(size); }
-
-	template<typename T>
-	inline constexpr T* Vector<T>::Data() { return m_Vector.data(); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Push(const T& value) { m_Vector.push_back(value); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Emplace(const T& value) { m_Vector.emplace_back(value); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Emplace(const T& value, size_t index) { m_Vector.emplace(m_Vector.begin() + index, value); }
-
-	template<typename T>
-	inline constexpr void Vector<T>::Pop() { m_Vector.pop_back(); }
 
 	///////////////////////////////////////////////////////////
 	// Custom Methods
 	///////////////////////////////////////////////////////////
 	template<typename T>
-	Views::TransformView<std::vector<T>, typename Vector<T>::TranformFunction> Vector<T>::Transform(TranformFunction function)
+	constexpr void Vector<T>::Clear()
 	{
-		return Views::TransformView(m_Vector, function);
+		if (m_Array)
+			Destroy(); // Also clears all variables
 	}
-#endif
+
+	template<typename T>
+	constexpr void Vector<T>::Reserve(size_t capacity)
+	{
+		if (capacity <= m_Capacity) return;
+
+		T* newArray = new T[capacity];
+
+		// Move existing elements to the new array (without calling the copy constructor)
+		std::move(m_Array, m_Array + m_Size, newArray);
+
+		delete[] m_Array;
+
+		m_Array = newArray;
+		m_Capacity = capacity;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::Resize(size_t size)
+	{
+		if (size > m_Size)
+		{
+			if (size > m_Capacity)
+				Reserve(size);
+
+			// Default-initialize new elements
+			std::uninitialized_value_construct_n(m_Array + m_Size, size - m_Size);
+		}
+		else if (size < m_Size)
+		{
+			// Destroy excess elements (calls destructor when possible)
+			std::destroy_n(m_Array + m_Size, m_Size - size);
+		}
+
+		m_Size = size;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::PushBack(const T& value)
+	{
+		if (m_Size == m_Capacity) 
+			Resize(m_Capacity * 2);
+
+		m_Array[m_Size] = value;
+		++m_Size;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::PushBack(T&& value)
+	{
+		if (m_Size == m_Capacity)
+			Resize(m_Capacity * 2);
+		
+		m_Array[m_Size] = std::move(value);
+		++m_Size;
+	}
+
+	template<typename T>
+	template<typename ...Args>
+	constexpr void Vector<T>::Emplace(size_t index, Args&&... args)
+	{
+		// Check if index is valid within size
+		Logger::Assert((index < m_Size), "Tried to emplace element at index {0}, but size is {1}", index, m_Size);
+
+		if (m_Size == m_Capacity)
+			Resize(m_Capacity * 2);
+
+		// Move elements to make space for the new element
+		for (size_t i = m_Size; i > index; --i)
+			m_Array[i] = std::move(m_Array[i - 1]);
+
+		// Construct the new element in place
+		new (&m_Array[index]) T(std::forward<Args>(args)...);
+		++m_Size;
+	}
+
+	template<typename T>
+	template<typename ...Args>
+	constexpr void Vector<T>::EmplaceBack(Args&&... args)
+	{
+		if (m_Size == m_Capacity) 
+			Resize(m_Capacity * 2);
+		
+		// Construct the new element in place
+		new (&m_Array[m_Size]) T(std::forward<Args>(args)...);
+		++m_Size;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::PopBack()
+	{
+		if (m_Size == 0) return;
+
+		std::destroy_at(m_Array + (m_Size - 1));
+		--m_Size;
+	}
+
+	///////////////////////////////////////////////////////////
+	// Private Methods
+	///////////////////////////////////////////////////////////
+	template<typename T>
+	constexpr void Vector<T>::Create(size_t capacity)
+	{
+		// If an array exists, delete it.
+		if (m_Array) 
+			Destroy();
+
+		m_Array = new T[capacity];
+
+		m_Size = 0ull;
+		m_Capacity = capacity;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::Create(size_t capacity, T&& initialValue)
+	{
+		// If an array exists, delete it.
+		if (m_Array)
+			Destroy();
+
+		m_Array = new T[capacity];
+
+		// Initialize elements using move constructor
+		for (size_t i = 0; i < capacity; ++i)
+			new (&m_Array[i]) T(std::move(initialValue)); // Move initialization
+
+		m_Size = 0ull;
+		m_Capacity = capacity;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::Copy(const T* copyFrom, size_t copySize)
+	{
+		// Check if we can keep our current memory, if not allocate new memory
+		if (m_Capacity < copySize)
+			Create(copySize);
+
+		std::copy(copyFrom, copyFrom + copySize, m_Array);
+
+		m_Size = copySize;
+	}
+
+	template<typename T>
+	constexpr void Vector<T>::Destroy()
+	{
+		delete[] m_Array;
+
+		m_Array = nullptr;
+
+		m_Size = 0ull;
+		m_Capacity = 0ull;
+	}
 
 }

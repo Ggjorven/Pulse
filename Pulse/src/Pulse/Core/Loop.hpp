@@ -6,30 +6,33 @@
 
 #include "Pulse/Types/Traits.hpp"
 #include "Pulse/Types/Concepts.hpp"
+#include "Pulse/Types/TypeUtils.hpp"
 
 namespace Pulse::Loop
 {
 
+    /*
     template<Types::Concepts::Iterable Iterable>
-    inline void ForEach(const Iterable& object, std::function<void(typename Types::RangeTraits<Iterable>::RangeValue)> callback)
+    inline void ForEach(Iterable object, std::function<void(Types::Clean<typename Types::RangeTraits<Iterable>::RangeValue>)> callback)
+    {
+        for (auto element : object)
+            callback(element);
+    }
+
+    template<Types::Concepts::Iterable Iterable>
+    inline void ForEach(Iterable& object, std::function<void(Types::Clean<typename Types::RangeTraits<Iterable>::RangeValue>&)> callback)
     {
         for (auto& element : object)
             callback(element);
     }
 
     template<Types::Concepts::Iterable Iterable>
-    inline void ForEach(Iterable& object, std::function<void(typename Types::RangeTraits<Iterable>::RangeValue&)> callback)
+    inline void ForEach(const Iterable& object, std::function<void(const Types::Clean<typename Types::RangeTraits<Iterable>::RangeValue>&)> callback)
     {
-        for (auto& element : object)
+        for (const auto& element : object)
             callback(element);
     }
-
-    template<Types::Concepts::Iterable Iterable>
-    inline void ForEach(const Iterable& object, std::function<void(const typename Types::RangeTraits<Iterable>::RangeValue&)> callback)
-    {
-        for (auto& element : object)
-            callback(element);
-    }
+    */
 
 
 
