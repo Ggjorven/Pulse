@@ -212,6 +212,15 @@ namespace Pulse
         return nullptr;
     }
 
+// Platform-specific warning suppression
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable : 4715)
+#elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wreturn-type"
+#endif
+
     template<typename Key, typename Value>
     constexpr Value& HashMap<Key, Value>::At(const Key& key)
     {
@@ -239,6 +248,13 @@ namespace Pulse
 
         Logger::Assert(false, "Key not found");
     }
+
+    // Restore warning settings
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
+    #pragma GCC diagnostic pop
+#endif
 
     template<typename Key, typename Value>
     constexpr bool HashMap<Key, Value>::Contains(const Key& key) const

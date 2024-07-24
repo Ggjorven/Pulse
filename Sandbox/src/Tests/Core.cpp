@@ -7,10 +7,7 @@
 struct TestClass : public Pulse::RefCounted
 {
 public:
-	TestClass()
-	{
-
-	}
+	TestClass() {}
 };
 
 CoreTest::CoreTest()
@@ -25,7 +22,7 @@ TestResult CoreTest::Execute()
 {
 	using namespace Pulse;
 
-	bool failed = false;
+	TestResult result;
 
 	// Ref Test
 	void* ptr = nullptr;
@@ -33,14 +30,14 @@ TestResult CoreTest::Execute()
 		Ref<TestClass> ref = Ref<TestClass>::Create();
 		ptr = ref.Raw();
 
-		failed |= !RefUtils::IsLive(ref.Raw());
+		PULSE_TEST(!RefUtils::IsLive(ref.Raw()));
 
 		{
 			Ref<TestClass> ref2 = ref;
-			failed |= !RefUtils::IsLive(ref.Raw());
+			PULSE_TEST(!RefUtils::IsLive(ref.Raw()));
 		}
 	}
-	failed |= RefUtils::IsLive(ptr);
+	PULSE_TEST(RefUtils::IsLive(ptr));
 
 	// Unique Test // TODO: ...
 	{
@@ -54,12 +51,12 @@ TestResult CoreTest::Execute()
 			Ref<TestClass> ref = Ref<TestClass>::Create();
 			weak = ref;
 
-			failed |= !weak.IsValid();
+			PULSE_TEST(!weak.IsValid());
 
 			Ref<TestClass> strong = weak.GetRef();
 		}
-		failed |= weak.IsValid();
+		PULSE_TEST(weak.IsValid());
 	}
 
-	return { .Succeeded = !failed };
+	return result;
 }

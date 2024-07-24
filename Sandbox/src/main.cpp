@@ -7,9 +7,12 @@
 
 // All tests
 #include "Tests/Core.hpp"
+#include "Tests/Text.hpp"
 #include "Tests/Types.hpp"
 #include "Tests/Classes.hpp"
 #include "Tests/Enum.hpp"
+#include "Tests/Thread.hpp"
+#include "Tests/Time.hpp"
 
 static void LogCallback(Pulse::LogLevel level, std::string message)
 {
@@ -48,9 +51,12 @@ int main(int argc, char* argv[])
 	Logger::Init(&LogCallback, &AssertCallback);
 
 	Tester::Run<CoreTest>();
+	Tester::Run<TextTest>();
 	Tester::Run<TypesTest>();
 	Tester::Run<ClassesTest>();
 	Tester::Run<EnumTest>();
+	Tester::Run<ThreadTest>();
+	Tester::Run<TimeTest>();
 
 	return 0;
 }

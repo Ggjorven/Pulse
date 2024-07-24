@@ -31,21 +31,17 @@ TypesTest::~TypesTest()
 
 TestResult TypesTest::Execute()
 {
-	bool failed = false;
+	TestResult result;
 
-	failed |= !(Pulse::Types::Same<int, int>);
-	failed |= !(Pulse::Types::InheritsFrom<Base, Derived>);
-	failed |= !(Pulse::Types::Same<Pulse::Types::AddPointer<int>, int*>);
-	failed |= !(Pulse::Types::Same<Pulse::Types::AddReference<int>, int&>);
-	failed |= !(Pulse::Types::Same<Pulse::Types::Clean<const int&>, int>);
+	PULSE_TEST(!(Pulse::Types::Same<int, int>));
+	PULSE_TEST(!(Pulse::Types::InheritsFrom<Base, Derived>));
+	PULSE_TEST(!(Pulse::Types::Same<Pulse::Types::AddPointer<int>, int*>));
+	PULSE_TEST(!(Pulse::Types::Same<Pulse::Types::AddReference<int>, int&>));
+	PULSE_TEST(!(Pulse::Types::Same<Pulse::Types::Clean<const int&>, int>));
 
-	std::vector<int> vec = { 1, 2, 3, 4, 5 };
-	IterateOver(vec);
-	std::list<float> lst = { 5.0f, 4.0f, 3.0f, 2.0f, 1.0f };
-	IterateOver(lst);
+	PULSE_TEST(!Pulse::Types::Concepts::Iterable<std::vector<int>>);
+	PULSE_TEST(!Pulse::Types::Concepts::Iterable<std::list<float>>);
+	PULSE_TEST(!Pulse::Types::Concepts::Iterable<CustomIterable>);
 
-	CustomIterable custom;
-	IterateOver(custom);
-
-	return { .Succeeded = !failed };
+	return result;
 }

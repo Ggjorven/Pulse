@@ -6,6 +6,8 @@
 #include <Pulse/Classes/Vector.hpp>
 #include <Pulse/Classes/HashMap.hpp>
 
+#include <Pulse/Types/Concepts.hpp>
+
 #include <string>
 
 ClassesTest::ClassesTest() 
@@ -20,7 +22,7 @@ TestResult ClassesTest::Execute()
 {
 	using namespace Pulse;
 
-	bool failed = false;
+	TestResult result;
 
 	// Vector class
 	{
@@ -35,15 +37,7 @@ TestResult ClassesTest::Execute()
 			return n * 2;
 		});
 
-		// See if we can even loop over it
-		Vector<int> vecFiltered = { };
-		for (auto n : filtered)
-			vecFiltered.PushBack(n);
-
-		// See if we can even loop over it
-		Vector<int> vecTransformed = { };
-		for (auto n : transformed)
-			vecTransformed.PushBack(n);
+		PULSE_TEST(!Types::Concepts::Iterable<Vector<int>>);
 	}
 
 	// HashMap class
@@ -54,27 +48,27 @@ TestResult ClassesTest::Execute()
 		map.Insert(1, "Second");
 		map.Insert(2, "Third");
 
-		failed |= !(map.Contains(0));
-		failed |= !(map.Contains(1));
-		failed |= !(map.Contains(2));
-		failed |= !(map.At(0) == "First");
-		failed |= !(map.At(1) == "Second");
-		failed |= !(map.At(2) == "Third");
-		failed |= !(map[0] == "First");
-		failed |= !(map[1] == "Second");
-		failed |= !(map[2] == "Third");
-		failed |= (map.Contains(3));
-		failed |= !(map.Find(3) == nullptr);
+		PULSE_TEST(!(map.Contains(0)));
+		PULSE_TEST(!(map.Contains(1)));
+		PULSE_TEST(!(map.Contains(2)));
+
+		PULSE_TEST(!(map.At(0) == "First"));
+		PULSE_TEST(!(map.At(1) == "Second"));
+		PULSE_TEST(!(map.At(2) == "Third"));
+
+		PULSE_TEST(!(map[0] == "First"));
+		PULSE_TEST(!(map[1] == "Second"));
+		PULSE_TEST(!(map[2] == "Third"));
+
+		PULSE_TEST((map.Contains(3)));
+		PULSE_TEST(!(map.Find(3) == nullptr));
 		
 		map.Remove(0);
-		failed |= (map.Contains(0));
-		failed |= !(map.Find(0) == nullptr);
+		PULSE_TEST((map.Contains(0)));
+		PULSE_TEST(!(map.Find(0) == nullptr));
 
-		// See if we can even loop over it
-		HashMap<int, std::string> map2 = { };
-		for (auto& [key, value] : map)
-			map2.Insert(key, value);
+		PULSE_TEST((Types::Concepts::Iterable<HashMap<int, std::string>>));
 	}
 
-	return { .Succeeded = !failed };
+	return result;
 }

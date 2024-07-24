@@ -3,7 +3,7 @@
 struct TestResult
 {
 public:
-	bool Succeeded = true;
+	bool Failed = false;
 	std::string Message = "None";
 };
 
@@ -16,3 +16,5 @@ public:
 
 	virtual TestResult Execute() = 0;
 };
+
+#define PULSE_TEST(x) result.Failed |= (x); result.Message = #x

@@ -26,7 +26,7 @@ inline void Tester::Run() requires Types::Concepts::InheritsFrom<Test, T>
 	TestResult result = instance.Execute();
 	
 	// We assume that the Logger has been initialized.
-	if (!result.Succeeded)
+	if (result.Failed)
 		Logger::Log(LogLevel::Error, "Test: {0} failed. Message: {1}", T::Name, result.Message);
 	else
 		Logger::Log(LogLevel::Info, "Test: {0} succeeded.", T::Name);

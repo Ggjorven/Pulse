@@ -21,20 +21,20 @@ TestResult EnumTest::Execute()
 {
 	using namespace Pulse;
 
-	bool failed = false;
+	TestResult result;
 
-	failed |= !(Enum::TypeName<MyEnum>() == "MyEnum");
-	failed |= !(Enum::Name(MyEnum::First) == "First");
-	failed |= !(Enum::Name(MyEnum::Second) == "Second");
-	failed |= !(Enum::Name(MyEnum::Third) == "Third");
+	PULSE_TEST(!(Enum::TypeName<MyEnum>() == "MyEnum"));
+	PULSE_TEST(!(Enum::Name(MyEnum::First) == "First"));
+	PULSE_TEST(!(Enum::Name(MyEnum::Second) == "Second"));
+	PULSE_TEST(!(Enum::Name(MyEnum::Third) == "Third"));
 
-	failed |= !(Enum::ElementCount<MyEnum>() == 4);
+	PULSE_TEST(!(Enum::ElementCount<MyEnum>() == 4));
 
-	failed |= !(Enum::Contains<MyEnum>(MyEnum::First));
-	failed |= !(Enum::Contains<MyEnum>(1));
-	failed |= !(Enum::Contains<MyEnum>(MyEnum::Third));
-	failed |= !(Enum::Contains<MyEnum>(3));
-	failed |= (Enum::Contains<MyEnum>(69));
+	PULSE_TEST(!(Enum::Contains<MyEnum>(MyEnum::First)));
+	PULSE_TEST(!(Enum::Contains<MyEnum>(1)));
+	PULSE_TEST(!(Enum::Contains<MyEnum>(MyEnum::Third)));
+	PULSE_TEST(!(Enum::Contains<MyEnum>(3)));
+	PULSE_TEST((Enum::Contains<MyEnum>(69)));
 
-	return { .Succeeded = !failed };
+	return result;
 }

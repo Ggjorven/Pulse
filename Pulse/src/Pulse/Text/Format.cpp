@@ -1,7 +1,7 @@
 #include "plpch.h"
 #include "Format.hpp"
 
-namespace Pulse
+namespace Pulse::Text
 {
 
 

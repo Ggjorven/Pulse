@@ -36,7 +36,7 @@
         ./gen-make-windows.bat
         ```
 
-### Linux // TODO
+### Linux
 
 1. Clone the repository:
     ```sh
