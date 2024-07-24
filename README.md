@@ -17,7 +17,7 @@
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/ggjorven/Pulse.git
+    git clone --recursive https://github.com/ggjorven/Pulse.git
     cd Pulse
     ```
 
@@ -40,7 +40,7 @@
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/ggjorven/Pulse.git
+    git clone --recursive https://github.com/ggjorven/Pulse.git
     cd Pulse
     ```
 
@@ -93,4 +93,4 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 ## Third party libraries
 All libraries stated below are used to create the **Pulse** library:
 
-- 
+- [magic_enum](https://github.com/Neargye/magic_enum.git) Licenced under the MIT LICENSE

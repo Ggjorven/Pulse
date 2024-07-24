@@ -35,14 +35,15 @@ TestResult ClassesTest::Execute()
 			return n * 2;
 		});
 
-		// TODO: Add a way to fail the test
+		// See if we can even loop over it
+		Vector<int> vecFiltered = { };
 		for (auto n : filtered)
-			Logger::Log(LogLevel::Trace, "{0}", n);
+			vecFiltered.PushBack(n);
 
-		Logger::Log(LogLevel::Trace, "-------------");
-
+		// See if we can even loop over it
+		Vector<int> vecTransformed = { };
 		for (auto n : transformed)
-			Logger::Log(LogLevel::Trace, "{0}", n);
+			vecTransformed.PushBack(n);
 	}
 
 	// HashMap class

@@ -202,7 +202,7 @@ namespace Pulse
 	}
 
 	template<typename T>
-	constexpr void Vector<T>::Resize(size_t size)
+	constexpr void Vector<T>::Resize(size_t size) // Don't use, just use Reserve() come on.
 	{
 		if (size > m_Size)
 		{
@@ -218,13 +218,13 @@ namespace Pulse
 			std::destroy_n(m_Array + m_Size, m_Size - size);
 		}
 
-		m_Size = size;
+		//m_Size = size;
 	}
 
 	template<typename T>
 	constexpr void Vector<T>::PushBack(const T& value)
 	{
-		if (m_Size == m_Capacity) 
+		if (m_Size >= m_Capacity) 
 			Resize(m_Capacity * 2);
 
 		m_Array[m_Size] = value;
@@ -234,7 +234,7 @@ namespace Pulse
 	template<typename T>
 	constexpr void Vector<T>::PushBack(T&& value)
 	{
-		if (m_Size == m_Capacity)
+		if (m_Size >= m_Capacity)
 			Resize(m_Capacity * 2);
 		
 		m_Array[m_Size] = std::move(value);
@@ -264,7 +264,7 @@ namespace Pulse
 	template<typename ...Args>
 	constexpr void Vector<T>::EmplaceBack(Args&&... args)
 	{
-		if (m_Size == m_Capacity) 
+		if (m_Size >= m_Capacity) 
 			Resize(m_Capacity * 2);
 		
 		// Construct the new element in place

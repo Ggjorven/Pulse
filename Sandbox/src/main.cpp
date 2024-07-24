@@ -9,6 +9,7 @@
 #include "Tests/Core.hpp"
 #include "Tests/Types.hpp"
 #include "Tests/Classes.hpp"
+#include "Tests/Enum.hpp"
 
 static void LogCallback(Pulse::LogLevel level, std::string message)
 {
@@ -49,6 +50,7 @@ int main(int argc, char* argv[])
 	Tester::Run<CoreTest>();
 	Tester::Run<TypesTest>();
 	Tester::Run<ClassesTest>();
+	Tester::Run<EnumTest>();
 
 	return 0;
 }
