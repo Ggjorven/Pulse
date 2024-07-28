@@ -7,8 +7,26 @@
 struct TestClass : public Pulse::RefCounted
 {
 public:
-	TestClass() {}
+	TestClass() = default;
+	virtual ~TestClass() = default;
 };
+
+struct TestClass2;
+ 
+// Static test to check if forward declaration works
+Pulse::Ref<TestClass2> Test2Create();
+
+struct TestClass2  : public TestClass
+{
+public:
+	TestClass2() = default;
+	~TestClass2() = default;
+};
+
+Pulse::Ref<TestClass2> Test2Create()
+{
+	return Pulse::Ref<TestClass2>::Create();
+}
 
 CoreTest::CoreTest()
 {
@@ -36,12 +54,16 @@ TestResult CoreTest::Execute()
 			Ref<TestClass> ref2 = ref;
 			PULSE_TEST(!RefUtils::IsLive(ref.Raw()));
 		}
+
+		// Static test to see if polymorphism is allowed
+		Ref<TestClass> ref3 = Ref<TestClass2>::Create();
 	}
 	PULSE_TEST(RefUtils::IsLive(ptr));
 
-	// Unique Test // TODO: ...
+	// Unique Test 
 	{
-
+		// Static test to see if polymorphism is allowed
+		Unique<TestClass> unique = Unique<TestClass2>::Create();
 	}
 	
 	// WeakRef Test

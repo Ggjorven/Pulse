@@ -121,6 +121,7 @@ namespace Pulse
 
         // Methods
         constexpr bool Insert(const Key& key, const Value& value);
+        constexpr bool Insert(const Key& key, Value&& value);
         constexpr bool Remove(const Key& key);
 
         constexpr Value* Find(const Key& key);
@@ -165,6 +166,25 @@ namespace Pulse
         if (LoadFactor() > s_MaxLoadFactor)
             Rehash(m_Buckets.size() * 2);
         
+        size_t index = GetBucketIndex(key);
+        for (auto& [k, v] : m_Buckets[index])
+        {
+            if (k == key)
+                return false; // Key already exists, do not insert
+        }
+
+        m_Buckets[index].emplace_back(key, value);
+        ++m_ElementCount;
+
+        return true;
+    }
+
+    template<typename Key, typename Value>
+    constexpr bool HashMap<Key, Value>::Insert(const Key& key, Value&& value)
+    {
+        if (LoadFactor() > s_MaxLoadFactor)
+            Rehash(m_Buckets.size() * 2);
+
         size_t index = GetBucketIndex(key);
         for (auto& [k, v] : m_Buckets[index])
         {

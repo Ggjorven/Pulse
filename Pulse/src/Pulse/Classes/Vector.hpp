@@ -317,6 +317,12 @@ namespace Pulse
 	template<typename T>
 	constexpr void Vector<T>::Copy(const T* copyFrom, size_t copySize)
 	{
+		if (copyFrom == nullptr || copySize == 0)
+		{
+			Create(s_DefaultCapacity);
+			return;
+		}
+
 		// Check if we can keep our current memory, if not allocate new memory
 		if (m_Capacity < copySize)
 			Create(copySize);

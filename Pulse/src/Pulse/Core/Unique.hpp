@@ -5,6 +5,7 @@
 namespace Pulse
 {
 
+    // TODO: Add T2 support
     template<typename T>
     class Unique
     {
@@ -13,6 +14,8 @@ namespace Pulse
         Unique() = default;
         Unique(T* ptr);
         Unique(Unique&& other);
+        template<typename T2>
+        Unique(Unique<T2>&& other);
         ~Unique();
 
         Unique(const Unique&) = delete;
@@ -21,6 +24,8 @@ namespace Pulse
         Unique& operator = (const Unique&) = delete;
         
         Unique& operator = (Unique&& other);
+        template<typename T2>
+        Unique& operator = (Unique<T2>&& other);
 
         inline T& operator * () { return *m_Instance; }
         inline const T& operator * () const { return *m_Instance; }
@@ -39,11 +44,17 @@ namespace Pulse
         void Reset(T* newPtr = nullptr);
         void Swap(Unique& other);
 
+        template<typename T2>
+        Unique<T2> As() const;
+
         template<typename... Args>
         static Unique<T> Create(Args&&... args);
 
     private:
         T* m_Instance = nullptr;
+
+        template<typename T2>
+        friend class Ref;
     };
 
     ///////////////////////////////////////////////////////////
@@ -56,6 +67,12 @@ namespace Pulse
     template<typename T>
     Unique<T>::Unique(Unique&& other)
         : m_Instance(other.Release()) {}
+
+    template<typename T>
+
+    template<typename T2>
+    Unique<T>::Unique(Unique<T2>&& other)
+        : m_Instance((T*)other.Release()) {}
 
     template<typename T>
     Unique<T>::~Unique()
@@ -72,6 +89,14 @@ namespace Pulse
         if (this != &other)
             Reset(other.Release());
         
+        return *this;
+    }
+
+    template<typename T>
+    template<typename T2>
+    Unique<T>& Unique<T>::operator = (Unique<T2>&& other)
+    {
+        m_Instance = other.Release();
         return *this;
     }
 
@@ -101,6 +126,13 @@ namespace Pulse
     void Unique<T>::Swap(Unique& other) 
     {
         std::swap(m_Instance, other.m_Instance);
+    }
+
+    template<typename T>
+    template<typename T2>
+    Unique<T2> Unique<T>::As() const
+    {
+        return Unique<T2>((T2*)Release());
     }
 
     template<typename T>

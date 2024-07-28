@@ -32,9 +32,12 @@ TestResult EnumTest::Execute()
 
 	PULSE_TEST(!(Enum::Contains<MyEnum>(MyEnum::First)));
 	PULSE_TEST(!(Enum::Contains<MyEnum>(1)));
+	PULSE_TEST(!(Enum::Contains<MyEnum>("First")));
 	PULSE_TEST(!(Enum::Contains<MyEnum>(MyEnum::Third)));
 	PULSE_TEST(!(Enum::Contains<MyEnum>(3)));
+	PULSE_TEST(!(Enum::Contains<MyEnum>("Third")));
 	PULSE_TEST((Enum::Contains<MyEnum>(69)));
+	PULSE_TEST((Enum::Contains<MyEnum>("Sixty-Nine")));
 
 	return result;
 }

@@ -6,9 +6,6 @@
 #include "Pulse/Types/Concepts.hpp"
 #include "Pulse/Types/TypeUtils.hpp"
 
-// Non-RefCounted doesn't work yet
-#define PULSE_USE_REFCOUNTED
-
 namespace Pulse
 {
 
@@ -26,20 +23,7 @@ namespace Pulse
 	// RefCounted Class
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
-	class RefCounted;
-
-#if defined(PULSE_USE_REFCOUNTED)
 	template<typename T>
-	concept DerivedFromRefCounted = std::is_base_of_v<RefCounted, T>;
-
-	#define REF_TEMPLATE(name) template<DerivedFromRefCounted name>
-#else
-	#define REF_TEMPLATE(name) template<typename name>
-#endif
-
-#if defined(PULSE_USE_REFCOUNTED)
-
-	REF_TEMPLATE(T)
 	class Ref;
 
 	class RefCounted
@@ -57,37 +41,36 @@ namespace Pulse
 	private:
 		mutable std::atomic<uint32_t> m_RefCount = 0;
 
-		REF_TEMPLATE(T)
+		template<typename T>
 		friend class Ref;
 	};
-#endif
 
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
 	// Ref Class
 	///////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////
-	REF_TEMPLATE(T)
+	template<typename T>
 	class Ref
 	{
 	public:
 		// Constructors
-		Ref() = default;
-		Ref(std::nullptr_t n);
-		Ref(T* instance);
+		Ref() requires Types::Concepts::InheritsFrom<RefCounted, T> = default;
+		Ref(std::nullptr_t n) requires Types::Concepts::InheritsFrom<RefCounted, T>;
+		Ref(T* instance) requires Types::Concepts::InheritsFrom<RefCounted, T>;
 		Ref(const Ref<T>& other);
-		REF_TEMPLATE(T2)
+		template<typename T2>
 		Ref(const Ref<T2>& other);
-		REF_TEMPLATE(T2)
+		template<typename T2>
 		Ref(Ref<T2>&& other);
 		~Ref();
 
 		// Operators
 		Ref& operator = (std::nullptr_t n);
 		Ref& operator = (const Ref<T>& other);
-		REF_TEMPLATE(T2)
+		template<typename T2>
 		Ref& operator = (const Ref<T2>& other);
-		REF_TEMPLATE(T2)
+		template<typename T2>
 		Ref& operator = (Ref<T2>&& other);
 
 		inline bool operator == (const Ref<T>& other) const { return m_Instance == other.m_Instance; }
@@ -108,7 +91,7 @@ namespace Pulse
 
 		void Reset(T* instance = nullptr);
 
-		REF_TEMPLATE(T2)
+		template<typename T2>
 		Ref<T2> As() const;
 
 		template<typename... Args>
@@ -124,57 +107,48 @@ namespace Pulse
 	private:
 		mutable T* m_Instance = nullptr;
 
-		REF_TEMPLATE(T2)
+		template<typename T2>
 		friend class Ref;
 	};
 
 	///////////////////////////////////////////////////////////
 	// Constructors
 	///////////////////////////////////////////////////////////
-	REF_TEMPLATE(T)
-	Ref<T>::Ref(std::nullptr_t n)
+	template<typename T>
+	Ref<T>::Ref(std::nullptr_t n) requires Types::Concepts::InheritsFrom<RefCounted, T>
 		: m_Instance(nullptr) {}
 
-	REF_TEMPLATE(T)
-	Ref<T>::Ref(T* instance)
+	template<typename T>
+	Ref<T>::Ref(T* instance) requires Types::Concepts::InheritsFrom<RefCounted, T>
 		: m_Instance(instance)
 	{
 		IncRef();
 	}
 
-	REF_TEMPLATE(T)
+	template<typename T>
 	Ref<T>::Ref(const Ref<T>& other)
 		: m_Instance(other.m_Instance)
-#if !(defined(PULSE_USE_REFCOUNTED))
-		, m_RefCount(other.m_RefCount)
-#endif
 	{
 		IncRef();
 	}
 
-	REF_TEMPLATE(T)
-	REF_TEMPLATE(T2)
+	template<typename T>
+	template<typename T2>
 	Ref<T>::Ref(const Ref<T2>& other)
 		: m_Instance((T*)other.m_Instance)
-#if !(defined(PULSE_USE_REFCOUNTED))
-		, m_RefCount(other.m_RefCount)
-#endif
 	{
 		IncRef();
 	}
 
-	REF_TEMPLATE(T)
-	REF_TEMPLATE(T2)
+	template<typename T>
+	template<typename T2>
 	Ref<T>::Ref(Ref<T2>&& other)
 		: m_Instance((T*)other.m_Instance)
-#if !(defined(PULSE_USE_REFCOUNTED))
-		, m_RefCount(other.m_RefCount)
-#endif
 	{
 		other.m_Instance = nullptr;
 	}
 
-	REF_TEMPLATE(T)
+	template<typename T>
 	Ref<T>::~Ref()
 	{
 		DecRef();
@@ -183,7 +157,7 @@ namespace Pulse
 	///////////////////////////////////////////////////////////
 	// Operators
 	///////////////////////////////////////////////////////////
-	REF_TEMPLATE(T)
+	template<typename T>
 	Ref<T>& Ref<T>::operator = (std::nullptr_t n)
 	{
 		DecRef();
@@ -191,51 +165,38 @@ namespace Pulse
 		return *this;
 	}
 
-	REF_TEMPLATE(T)
+	template<typename T>
 	Ref<T>& Ref<T>::operator = (const Ref<T>& other)
 	{
 		other.IncRef();
 		DecRef();
 
 		m_Instance = other.m_Instance;
-#if !(defined(PULSE_USE_REFCOUNTED))
-		m_RefCount = other.m_RefCount;
-#endif
 
 		return *this;
 	}
 
-	REF_TEMPLATE(T)
-	REF_TEMPLATE(T2)
+	template<typename T>
+	template<typename T2>
 	Ref<T>& Ref<T>::operator = (const Ref<T2>& other)
 	{
 		other.IncRef();
 		DecRef();
 
 		m_Instance = other.m_Instance;
-#if !(defined(PULSE_USE_REFCOUNTED))
-		m_RefCount = other.m_RefCount;
-#endif
 
 		return *this;
 	}
 
-	REF_TEMPLATE(T)
-	REF_TEMPLATE(T2)
+	template<typename T>
+	template<typename T2>
 	Ref<T>& Ref<T>::operator = (Ref<T2>&& other)
 	{
 		DecRef();
 
 		m_Instance = other.m_Instance;
-#if !(defined(PULSE_USE_REFCOUNTED))
-		m_RefCount = other.m_RefCount;
-#endif
 
 		other.m_Instance = nullptr;
-
-#if !(defined(PULSE_USE_REFCOUNTED))
-		other.m_RefCount = nullptr;
-#endif
 
 		return *this;
 	}
@@ -243,7 +204,7 @@ namespace Pulse
 	///////////////////////////////////////////////////////////
 	// Methods
 	///////////////////////////////////////////////////////////
-	REF_TEMPLATE(T)
+	template<typename T>
 	void Ref<T>::Reset(T* instance)
 	{
 		DecRef();
@@ -251,21 +212,21 @@ namespace Pulse
 		m_Instance = instance;
 	}
 
-	REF_TEMPLATE(T)
-	REF_TEMPLATE(T2)
+	template<typename T>
+	template<typename T2>
 	Ref<T2> Ref<T>::As() const
 	{
 		return Ref<T2>(*this);
 	}
 
-	REF_TEMPLATE(T)
+	template<typename T>
 	template<typename... Args>
 	Ref<T> Ref<T>::Create(Args&&... args)
 	{
 		return Ref<T>(new T(std::forward<Args>(args)...));
 	}
 
-	REF_TEMPLATE(T)
+	template<typename T>
 	bool Ref<T>::EqualsObject(const Ref<T>& other)
 	{
 		if (!m_Instance || !other.m_Instance)
@@ -277,46 +238,7 @@ namespace Pulse
 	///////////////////////////////////////////////////////////
 	// Private Methods
 	///////////////////////////////////////////////////////////
-#if !(defined(PULSE_USE_REFCOUNTED))
 	template<typename T>
-	void Ref<T>::IncRef() const
-	{
-		if (m_Instance)
-		{
-			if (!m_RefCount)
-			{
-				m_RefCount = new std::atomic<uint32_t>();
-				*m_RefCount = 0;
-			}
-
-			++(*m_RefCount);
-
-			RefUtils::AddToLiveReferences((void*)m_Instance);
-		}
-	}
-
-	template<typename T>
-	void Ref<T>::DecRef() const
-	{
-		if (m_Instance && m_RefCount)
-		{
-			--(*m_RefCount);
-
-			if (*m_RefCount == 0)
-			{
-				RefUtils::RemoveFromLiveReferences((void*)m_Instance);
-
-				delete m_Instance;
-				delete m_RefCount;
-
-				m_Instance = nullptr;
-				m_RefCount = nullptr;
-			}
-		}
-	}
-
-#else
-	template<DerivedFromRefCounted T>
 	void Ref<T>::IncRef() const
 	{
 		if (m_Instance)
@@ -327,7 +249,7 @@ namespace Pulse
 		}
 	}
 
-	template<DerivedFromRefCounted T>
+	template<typename T>
 	void Ref<T>::DecRef() const
 	{
 		if (m_Instance)
@@ -343,6 +265,5 @@ namespace Pulse
 			}
 		}
 	}
-#endif
 
 }

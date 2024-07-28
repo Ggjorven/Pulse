@@ -9,6 +9,7 @@
 #include "Tests/Core.hpp"
 #include "Tests/Text.hpp"
 #include "Tests/Types.hpp"
+#include "Tests/Events.hpp"
 #include "Tests/Classes.hpp"
 #include "Tests/Enum.hpp"
 #include "Tests/Thread.hpp"
@@ -53,6 +54,7 @@ int main(int argc, char* argv[])
 	Tester::Run<CoreTest>();
 	Tester::Run<TextTest>();
 	Tester::Run<TypesTest>();
+	Tester::Run<EventsTest>();
 	Tester::Run<ClassesTest>();
 	Tester::Run<EnumTest>();
 	Tester::Run<ThreadTest>();
