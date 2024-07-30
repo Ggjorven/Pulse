@@ -40,7 +40,7 @@ namespace Pulse::Time
 
     double Timer::ElapsedSeconds() const 
     {
-        return ElapsedMillis() * 1000.0;
+        return ElapsedMillis() / 1000.0;
     }
 
 }
