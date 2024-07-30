@@ -35,12 +35,12 @@ namespace Pulse::Time
 
     double Timer::ElapsedMillis() const 
     {
-        return elapsed<Duration, std::milli>().count();
+        return Elapsed<Duration, std::milli>().count();
     }
 
     double Timer::ElapsedSeconds() const 
     {
-        return elapsed<Duration, std::ratio<1, 1>>().count();
+        return ElapsedMillis() * 1000.0;
     }
 
 }

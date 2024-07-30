@@ -22,7 +22,7 @@ namespace Pulse::Time
         double ElapsedSeconds() const;
 
         template<typename T = Duration, typename R = std::milli>
-        inline T elapsed() const { return m_Running ? T(Now() - m_Start) : T(m_End - m_Start); }
+        inline T Elapsed() const { return m_Running ? T(Now() - m_Start) : T(m_End - m_Start); }
 
     private:
         TimePoint m_Start;
