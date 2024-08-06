@@ -3,6 +3,7 @@
 #include <Pulse/Core/Logging.hpp>
 
 #include <Pulse/Enum/Enum.hpp>
+#include <Pulse/Types/TypeUtils.hpp>
 
 enum class MyEnum : uint8_t
 {
@@ -38,6 +39,8 @@ TestResult EnumTest::Execute()
 	PULSE_TEST(!(Enum::Contains<MyEnum>("Third")));
 	PULSE_TEST((Enum::Contains<MyEnum>(69)));
 	PULSE_TEST((Enum::Contains<MyEnum>("Sixty-Nine")));
+
+    PULSE_TEST(!(Types::Same<decltype(Enum::Fuse(MyEnum::First, MyEnum::Second)), uint16_t>));
 
 	return result;
 }
