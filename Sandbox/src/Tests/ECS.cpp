@@ -1,6 +1,7 @@
 #include "ECS.hpp"
 
 #include <Pulse/Core/Logging.hpp>
+#include <Pulse/Core/Defines.hpp>
 
 #include <Pulse/ECS/EnTT.hpp>
 
@@ -21,10 +22,10 @@ TestResult ECSTest::Execute()
 {
 	using namespace Pulse;
 
-    entt::registry registry;
-
 	TestResult result;
 
+    ECS::Registry registry = {};
+    PULSE_TEST(!((u32)registry.create() == 0u));
 
 	return result;
 }

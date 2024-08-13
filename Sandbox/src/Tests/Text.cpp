@@ -3,8 +3,6 @@
 #include <Pulse/Text/Format.hpp>
 #include <Pulse/Text/TextUtils.hpp>
 
-#include <iostream> // TODO: Remove
-
 TextTest::TextTest()
 {
 }
@@ -29,9 +27,9 @@ TestResult TextTest::Execute()
 	{
 		std::string text = "  Hello, world!  ";
 		PULSE_TEST(!(Text::Trim(text) == "Hello, world!"));
-		
+
 		std::string text2 = "one,two,three,four";
-		Vector<std::string_view> parts = Text::Split(text2, ',');
+		auto parts = Text::Split(text2, ',');
 		PULSE_TEST(!(Text::Join(parts, '-') == "one-two-three-four"));
 	}
 

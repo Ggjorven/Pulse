@@ -5,7 +5,6 @@
 namespace Pulse
 {
 
-    // TODO: Add T2 support
     template<typename T>
     class Unique
     {
@@ -19,10 +18,10 @@ namespace Pulse
         ~Unique();
 
         Unique(const Unique&) = delete;
-        
+
         // Operators
         Unique& operator = (const Unique&) = delete;
-        
+
         Unique& operator = (Unique&& other);
         template<typename T2>
         Unique& operator = (Unique<T2>&& other);
@@ -84,11 +83,11 @@ namespace Pulse
     // Operators
     ///////////////////////////////////////////////////////////
     template<typename T>
-    Unique<T>& Unique<T>::operator = (Unique<T>&& other) 
+    Unique<T>& Unique<T>::operator = (Unique<T>&& other)
     {
         if (this != &other)
             Reset(other.Release());
-        
+
         return *this;
     }
 
@@ -123,7 +122,7 @@ namespace Pulse
     }
 
     template<typename T>
-    void Unique<T>::Swap(Unique& other) 
+    void Unique<T>::Swap(Unique& other)
     {
         std::swap(m_Instance, other.m_Instance);
     }

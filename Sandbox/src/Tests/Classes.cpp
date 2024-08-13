@@ -1,17 +1,15 @@
 #include "Classes.hpp"
 
 #include <Pulse/Core/Logging.hpp>
-#include <Pulse/Core/Loop.hpp>
 
 #include <Pulse/Classes/Vector.hpp>
 #include <Pulse/Classes/HashMap.hpp>
-#include <Pulse/Classes/Function.hpp>
 
 #include <Pulse/Types/Concepts.hpp>
 
 #include <string>
 
-ClassesTest::ClassesTest() 
+ClassesTest::ClassesTest()
 {
 }
 
@@ -63,24 +61,12 @@ TestResult ClassesTest::Execute()
 
 		PULSE_TEST((map.Contains(3)));
 		PULSE_TEST(!(map.Find(3) == nullptr));
-		
+
 		map.Remove(0);
 		PULSE_TEST((map.Contains(0)));
 		PULSE_TEST(!(map.Find(0) == nullptr));
 
 		PULSE_TEST((Types::Concepts::Iterable<HashMap<int, std::string>>));
-	}
-
-	// Function class // TODO: ...
-	{
-		/*
-		Function<int(int)> func = Function<int(int)>([](int n) -> int
-		{
-			return n;
-		});
-
-		PULSE_TEST(!(func(10) == 10));
-		*/
 	}
 
 	return result;

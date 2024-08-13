@@ -1,8 +1,10 @@
 #include "Core.hpp"
 
+#include <Pulse/Core/Logging.hpp>
 #include <Pulse/Core/Ref.hpp>
 #include <Pulse/Core/Unique.hpp>
 #include <Pulse/Core/WeakRef.hpp>
+#include <Pulse/Core/Defines.hpp>
 
 struct TestClass : public Pulse::RefCounted
 {
@@ -12,7 +14,7 @@ public:
 };
 
 struct TestClass2;
- 
+
 // Static test to check if forward declaration works
 Pulse::Ref<TestClass2> Test2Create();
 
@@ -60,12 +62,12 @@ TestResult CoreTest::Execute()
 	}
 	PULSE_TEST(RefUtils::IsLive(ptr));
 
-	// Unique Test 
+	// Unique Test
 	{
 		// Static test to see if polymorphism is allowed
 		Unique<TestClass> unique = Unique<TestClass2>::Create();
 	}
-	
+
 	// WeakRef Test
 	{
 		WeakRef<TestClass> weak;
@@ -79,6 +81,16 @@ TestResult CoreTest::Execute()
 		}
 		PULSE_TEST(weak.IsValid());
 	}
+
+    // Defines
+    {
+        #if defined(INT32_MAX)
+        PULSE_TEST(!(Numeric::Max<i32>() == INT32_MAX));
+        #endif
+        #if defined(UINT32_MAX)
+        PULSE_TEST(!(Numeric::Max<u32>() == UINT32_MAX));
+        #endif
+    }
 
 	return result;
 }

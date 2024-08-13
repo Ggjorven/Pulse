@@ -1,15 +1,19 @@
 # Pulse
 
-**Pulse** is a versatile C++ utility library designed to streamline common tasks and enhance the efficiency of your development workflow. Built with C++23, it leverages the latest features and improvements of the language to provide a modern and powerful toolkit.
+**Pulse** is a versatile C++ utility library designed to streamline common tasks and enhance the efficiency of your development workflow. Built with C++20, it leverages the latest features and improvements of the language to provide a modern and powerful toolkit.
 
 ## Features
 
 - **Utility Functions**: A collection of common utility functions to simplify your code.
 - **Data Structures**: Efficient and easy-to-use data structures.
 - **Algorithms**: A set of optimized algorithms for various use cases.
-- **Math Utilities**: Handy mathematical functions and constants.
-- **File I/O**: Simplified file input/output operations.
 - **Error Handling**: Robust error handling mechanisms.
+
+## Getting Started
+
+### Prerequisites
+
+- C++20 compatible compiler
 
 ## Installation
 
@@ -23,17 +27,17 @@
 
 2. Navigate to the scripts folder:
     ```sh
-    cd scripts
+    cd scripts/windows
     ```
 
 3. Choose what you want it build to:
     - Visual Studio 17 2022:
         ```sh
-        ./gen-vs2022-windows.bat
+        ./gen-vs2022.bat
         ```
-    - MinGW make files: // TODO
+    - MinGW make files:
         ```sh
-        ./gen-make-windows.bat
+        ./gen-make.bat
         ```
 
 ### Linux
@@ -46,39 +50,63 @@
 
 2. Navigate to the scripts folder:
     ```sh
-    cd scripts
+    cd scripts/linux
     ```
 
-3. Generate make files:
+3. (Optional) If you haven't already installed the premake5 build system you can install it like this:
     ```sh
-    chmod +x gen-make-linux.sh
-    ./gen-make-linux.sh
+    chmod +x install-premake5.sh
+    ./install-premake5.sh
     ```
 
-## Usage
+4. Generate make files:
+    ```sh
+    chmod +x gen-make.sh
+    ./gen-make.sh
+    ```
+
+## Building
 
 ### Windows
 - Visual Studio 17 2022:
     1. Navigate to the root of the directory
     2. Open the Pulse.sln file
     3. Start building in your desired configuration
-    4. Build files can be in the bin/%Config#-windows/ folder.
+    4. Build files can be in the bin/%Config%-windows/ folder.
     5. (Optional) Open a terminal and run the Sandbox project:
-    ```sh
-    ./Sandbox.exe
-    ```
+
+        ```sh
+        ./Sandbox.exe
+        ```
+
 - MinGW Make:
-    // TODO
+    1. Navigate to the root of the directory
+    2. Open a terminal.
+    3. Call make with desired configuration (debug, release or dist):
+
+        ```sh
+        make config=release
+        ```
+
+    5. Build files can be in the bin/%Config%-linux/ folder.
+    6. (Optional) Open a terminal and run the Sandbox project:
+        ```sh
+        ./Sandbox.exe
+        ```
 
 ### Linux
+
 1. Navigate to the root of the directory
 2. Open a terminal
-3. Call make with desired configuration (debug or release):
+3. Call make with desired configuration (debug, release or dist):
+
     ```sh
     make config=release
     ```
-4. Build files can be in the bin/%Config#-linux/ folder.
-5. (Optional) Open a terminal and run the Sandbox project:
+
+5. Build files can be in the bin/%Config%-linux/ folder.
+6. (Optional) Open a terminal and run the Sandbox project:
+
     ```sh
     chmod +x Sandbox
     ./Sandbox

@@ -5,6 +5,7 @@
 namespace Pulse::ECS
 {
 
-    // TODO: Implement custom classes
+    using Registry = entt::registry;
+    using Entity = entt::entity;
 
 }
