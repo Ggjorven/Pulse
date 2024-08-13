@@ -1,3 +1,6 @@
 [submodule "Pulse/vendor/magic_enum"]
 	path = Pulse/vendor/magic_enum
 	url = https://github.com/Neargye/magic_enum.git
+[submodule "Pulse/vendor/entt"]
+	path = Pulse/vendor/entt
+	url = https://github.com/skypjack/entt.git

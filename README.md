@@ -66,7 +66,7 @@
     5. (Optional) Open a terminal and run the Sandbox project:
     ```sh
     ./Sandbox.exe
-    ``` 
+    ```
 - MinGW Make:
     // TODO
 
@@ -94,3 +94,4 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 All libraries stated below are used to create the **Pulse** library:
 
 - [magic_enum](https://github.com/Neargye/magic_enum.git) Licenced under the MIT LICENSE
+- [entt](https://github.com/skypjack/entt.git) Licenced under the MIT LICENSE
