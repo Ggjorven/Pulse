@@ -26,3 +26,7 @@
 # Binaries
 /bin/
 /bin-int/
+
+# Makefiles
+Makefile
+make
