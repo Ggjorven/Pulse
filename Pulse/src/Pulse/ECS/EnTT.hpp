@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../vendor/entt/single_include/entt/entt.hpp"
+#include "../../../vendor/entt/single_include/entt/entt.hpp"
 
 namespace Pulse::ECS
 {
