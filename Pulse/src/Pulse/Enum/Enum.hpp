@@ -194,24 +194,24 @@ namespace Pulse::Enum
     #define PULSE_BIT_OPERATORS(ENUM)								    \
 	static_assert(std::is_enum_v<ENUM>, "ENUM must be an enum type");	\
 	[[nodiscard]]														\
-	inline constexpr auto operator &(ENUM lhs, ENUM rhs) noexcept		\
+	inline constexpr auto operator & (ENUM lhs, ENUM rhs) noexcept		\
 	{																	\
 		using U = std::underlying_type_t<ENUM>;							\
-		return EnumBitmask::EnumWrapper{								\
+		return Pulse::EnumBitmask::EnumWrapper{							\
 			ENUM(static_cast<U>(lhs) & static_cast<U>(rhs))};			\
 	}																	\
 	[[nodiscard]]														\
 	inline constexpr auto operator |(ENUM lhs, ENUM rhs) noexcept		\
 	{																	\
 		using U = std::underlying_type_t<ENUM>;							\
-		return EnumBitmask::EnumWrapper{								\
+		return Pulse::EnumBitmask::EnumWrapper{							\
 			ENUM(static_cast<U>(lhs) | static_cast<U>(rhs))};			\
 	}																	\
 	[[nodiscard]]														\
 	inline constexpr auto operator ^(ENUM lhs, ENUM rhs) noexcept		\
 	{																	\
 		using U = std::underlying_type_t<ENUM>;							\
-		return EnumBitmask::EnumWrapper{								\
+		return Pulse::EnumBitmask::EnumWrapper{							\
 			ENUM(static_cast<U>(lhs) ^ static_cast<U>(rhs)) };			\
 	}																	\
 	[[nodiscard]]														\
