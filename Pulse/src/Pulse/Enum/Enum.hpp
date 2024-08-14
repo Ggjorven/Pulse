@@ -197,21 +197,21 @@ namespace Pulse::Enum
 	inline constexpr auto operator & (ENUM lhs, ENUM rhs) noexcept		\
 	{																	\
 		using U = std::underlying_type_t<ENUM>;							\
-		return Pulse::EnumBitmask::EnumWrapper{							\
+		return Pulse::Enum::EnumBitmask::EnumWrapper{					\
 			ENUM(static_cast<U>(lhs) & static_cast<U>(rhs))};			\
 	}																	\
 	[[nodiscard]]														\
 	inline constexpr auto operator |(ENUM lhs, ENUM rhs) noexcept		\
 	{																	\
 		using U = std::underlying_type_t<ENUM>;							\
-		return Pulse::EnumBitmask::EnumWrapper{							\
+		return Pulse::Enum::EnumBitmask::EnumWrapper{					\
 			ENUM(static_cast<U>(lhs) | static_cast<U>(rhs))};			\
 	}																	\
 	[[nodiscard]]														\
 	inline constexpr auto operator ^(ENUM lhs, ENUM rhs) noexcept		\
 	{																	\
 		using U = std::underlying_type_t<ENUM>;							\
-		return Pulse::EnumBitmask::EnumWrapper{							\
+		return Pulse::Enum::EnumBitmask::EnumWrapper{					\
 			ENUM(static_cast<U>(lhs) ^ static_cast<U>(rhs)) };			\
 	}																	\
 	[[nodiscard]]														\
