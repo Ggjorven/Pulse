@@ -141,10 +141,10 @@ namespace Pulse::Enum
 		}
 
 		template <typename E, detail::enable_if_t<E, int> = 0>
-		inline constexpr bool operator & (E lhs, E rhs) noexcept
-		{
-			return static_cast<underlying_type_t<E>>(lhs) & static_cast<underlying_type_t<E>>(rhs);
-		}
+        inline constexpr E operator&(E lhs, E rhs) noexcept
+        {
+            return static_cast<E>(static_cast<underlying_type_t<E>>(lhs) & static_cast<underlying_type_t<E>>(rhs));
+        }
 
 		template <typename E, detail::enable_if_t<E, int> = 0>
 		inline constexpr E operator ^ (E lhs, E rhs) noexcept
@@ -157,6 +157,13 @@ namespace Pulse::Enum
 		{
 			return lhs = (lhs | rhs);
 		}
+
+        template <typename E, detail::enable_if_t<E, int> = 0>
+        inline constexpr E& operator&=(E& lhs, E rhs) noexcept
+        {
+            return lhs = (lhs & rhs);
+        }
+
 
 		template <typename E, detail::enable_if_t<E, int> = 0>
 		inline constexpr E& operator ^= (E& lhs, E rhs) noexcept
