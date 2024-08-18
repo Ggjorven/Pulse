@@ -1,7 +1,7 @@
 project "Pulse"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++latest"
+	cppdialect "C++20"
 	staticruntime "On"
 
 	architecture "x86_64"
