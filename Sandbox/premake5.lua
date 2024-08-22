@@ -43,6 +43,20 @@ project "Sandbox"
 		systemversion "latest"
 		staticruntime "on"
 
+	filter "system:macosx"
+		systemversion "latest"
+		staticruntime "on"
+
+		-- Note: If we don't add the header files to the sysincluddirs
+		-- we can't use <angled> brackets to include files.
+		sysincludedirs
+		{
+			"src",
+			"%{wks.location}/vendor",
+	
+			"%{wks.location}/Pulse/src"
+		}
+
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
