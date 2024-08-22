@@ -44,7 +44,7 @@ project "Sandbox"
 		staticruntime "on"
 
 	filter "system:macosx"
-		systemversion "latest"
+		systemversion "14.5"
 		staticruntime "on"
 
 		-- Note: If we don't add the header files to the sysincluddirs

@@ -40,7 +40,7 @@ project "Pulse"
 		staticruntime "on"
 
 	filter "system:macosx"
-		systemversion "latest"
+		systemversion "14.5"
 		staticruntime "on"
 
 		-- Note: XCode only needs the full pchheader path
