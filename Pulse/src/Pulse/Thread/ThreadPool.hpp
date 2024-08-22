@@ -14,6 +14,9 @@
 namespace Pulse
 {
 
+    // Note: All threading functionality is currently stripped from macos
+    // due to compilation errors with xcode.
+#if defined(PULSE_PLATFORM_WINDOWS) || defined(PULSE_PLATFORM_LINUX)
     class ThreadPool
     {
     public:
@@ -32,5 +35,6 @@ namespace Pulse
         std::condition_variable m_Condition;
         std::atomic<bool> m_Stop = false;
     };
+#endif
 
 }

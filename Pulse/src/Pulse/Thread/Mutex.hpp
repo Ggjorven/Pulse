@@ -1,10 +1,15 @@
 #pragma once
 
+#include "Pulse/Core/Core.hpp"
+
 #include <mutex>
 
 namespace Pulse
 {
 
+    // Note: All threading functionality is currently stripped from macos
+    // due to compilation errors with xcode.
+#if defined(PULSE_PLATFORM_WINDOWS) || defined(PULSE_PLATFORM_LINUX)
     class Mutex 
     {
     public:
@@ -21,5 +26,6 @@ namespace Pulse
     private:
         std::mutex m_Mutex = {};
     };
+#endif
 
 }

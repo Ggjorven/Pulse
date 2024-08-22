@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Pulse/Core/Core.hpp"
+
 #include "Pulse/Types/Traits.hpp"
 #include "Pulse/Types/Concepts.hpp"
 #include "Pulse/Types/TypeUtils.hpp"
@@ -9,6 +11,9 @@
 namespace Pulse
 {
 
+    // Note: All threading functionality is currently stripped from macos
+    // due to compilation errors with xcode.
+#if defined(PULSE_PLATFORM_WINDOWS) || defined(PULSE_PLATFORM_LINUX)
 	class Thread
 	{
 	public:
@@ -41,5 +46,6 @@ namespace Pulse
     template<Types::Concepts::Callable F, typename ...Args>
     Thread::Thread(F&& func, Args&&... args) requires(Types::Concepts::CallableWithArgs<F, typename Types::FunctionTraits<F>::ReturnType, Args...>)
         : m_Thread(std::thread(std::forward<F>(func), std::forward<Args>(args)...)) {}
+#endif
 
 }

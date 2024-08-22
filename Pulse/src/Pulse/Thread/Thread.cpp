@@ -4,6 +4,9 @@
 namespace Pulse
 {
 
+	// Note: All threading functionality is currently stripped from macos
+	// due to compilation errors with xcode.
+#if defined(PULSE_PLATFORM_WINDOWS) || defined(PULSE_PLATFORM_LINUX)
 	///////////////////////////////////////////////////////////
 	// Constructors
 	///////////////////////////////////////////////////////////
@@ -46,5 +49,6 @@ namespace Pulse
 		if (m_Thread.joinable())
 			m_Thread.detach();
 	}
+#endif
 
 }

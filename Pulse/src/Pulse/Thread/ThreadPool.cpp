@@ -4,6 +4,9 @@
 namespace Pulse
 {
 
+    // Note: All threading functionality is currently stripped from macos
+    // due to compilation errors with xcode.
+#if defined(PULSE_PLATFORM_WINDOWS) || defined(PULSE_PLATFORM_LINUX)
     ThreadPool::ThreadPool(size_t numThreads)
     {
         for (size_t i = 0; i < numThreads; ++i)
@@ -53,5 +56,6 @@ namespace Pulse
             task();
         }
     }
+#endif
 
 }
