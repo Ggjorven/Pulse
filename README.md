@@ -65,9 +65,35 @@
     ./gen-make.sh
     ```
 
+### MacOS
+
+1. Clone the repository:
+    ```sh
+    git clone --recursive https://github.com/ggjorven/Pulse.git
+    cd Pulse
+    ```
+
+2. Navigate to the scripts folder:
+    ```sh
+    cd scripts/macos
+    ```
+
+3. (Optional) If you haven't already installed the premake5 build system you can install it like this:
+    ```sh
+    chmod +x install-premake5.sh
+    ./install-premake5.sh
+    ```
+
+4. Generate make files:
+    ```sh
+    chmod +x gen-xcode.sh
+    ./gen-xcode.sh
+    ```
+
 ## Building
 
 ### Windows
+
 - Visual Studio 17 2022:
     1. Navigate to the root of the directory
     2. Open the Pulse.sln file
@@ -106,6 +132,19 @@
 
 5. Build files can be in the bin/%Config%-linux/ folder.
 6. (Optional) Open a terminal and run the Sandbox project:
+
+    ```sh
+    chmod +x Sandbox
+    ./Sandbox
+    ```
+
+### MacOS
+
+1. Navigate to the root of the directory
+2. Open the Pulse.xcworkspace file
+3. Start building in your desired configuration
+4. Build files can be in the bin/%Config%-macosx/ folder.
+5. (Optional) Open a terminal and run the Sandbox project:
 
     ```sh
     chmod +x Sandbox
