@@ -46,9 +46,9 @@ project "Pulse"
 		-- Note: XCode only needs the full pchheader path
 		pchheader "src/Pulse/plpch.h"
 
-		-- Note: If we don't add the header files to the sysincluddirs
+		-- Note: If we don't add the header files to the externalincludedirs
 		-- we can't use <angled> brackets to include files.
-		sysincludedirs
+		externalincludedirs
 		{
 			"src",
 			"src/Pulse"

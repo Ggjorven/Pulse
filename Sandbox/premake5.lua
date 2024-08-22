@@ -47,9 +47,9 @@ project "Sandbox"
 		systemversion "14.5"
 		staticruntime "on"
 
-		-- Note: If we don't add the header files to the sysincluddirs
+		-- Note: If we don't add the header files to the externalincludedirs
 		-- we can't use <angled> brackets to include files.
-		sysincludedirs
+		externalincludedirs
 		{
 			"src",
 			"%{wks.location}/vendor",
