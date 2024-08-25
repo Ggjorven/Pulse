@@ -25,17 +25,6 @@ TestResult ClassesTest::Execute()
 
 	// Vector class
 	{
-		Vector<int> vec = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-		auto filtered = vec | Vector<int>::Filter([](int n) -> bool
-		{
-			return !(n % 2);
-		});
-		auto transformed = filtered | Vector<int>::Transform([](int n) -> int
-		{
-			return n * 2;
-		});
-
 		PULSE_TEST(!Types::Concepts::Iterable<Vector<int>>);
 	}
 

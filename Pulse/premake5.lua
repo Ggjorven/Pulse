@@ -1,3 +1,5 @@
+MacOSVersion = MacOSVersion or "14.5"
+
 project "Pulse"
 	kind "StaticLib"
 	language "C++"
@@ -40,7 +42,7 @@ project "Pulse"
 		staticruntime "on"
 
 	filter "system:macosx"
-		systemversion "14.5"
+		systemversion "%{MacOSVersion}"
 		staticruntime "on"
 
 		-- Note: XCode only needs the full pchheader path

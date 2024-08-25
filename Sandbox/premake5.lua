@@ -1,7 +1,9 @@
+MacOSVersion = MacOSVersion or "14.5"
+
 project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++latest"
+	cppdialect "C++20"
 	staticruntime "off"
 	
 	architecture "x86_64"
@@ -44,7 +46,7 @@ project "Sandbox"
 		staticruntime "on"
 
 	filter "system:macosx"
-		systemversion "14.5"
+		systemversion "%{MacOSVersion}"
 		staticruntime "on"
 
 		-- Note: If we don't add the header files to the externalincludedirs

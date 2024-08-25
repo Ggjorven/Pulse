@@ -35,6 +35,9 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 	case Pulse::LogLevel::Fatal:
 		std::cout << "[Pulse] Fatal: " << message << std::endl;
 		break;
+
+	default:
+		break;
 	}
 }
 

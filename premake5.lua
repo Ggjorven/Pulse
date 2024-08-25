@@ -3,6 +3,8 @@
 ------------------------------------------------------------------------------
 outputdir = "%{cfg.buildcfg}-%{cfg.system}"
 
+MacOSVersion = "14.5"
+
 workspace "Pulse"
 	architecture "x86_64"
 	startproject "Sandbox"
