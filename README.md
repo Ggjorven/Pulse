@@ -17,7 +17,7 @@
 
 ### Building
 
-Build instructions for this project can be found in the [BUILDING.md](BUILDING.md) file. Supported platforms are Windows (vs2022 & make), Linux (make) & MacOS (XCode) partially.
+Build instructions for this project can be found in the [BUILDING](BUILDING.md) file. Supported platforms are Windows (vs2022 & make), Linux (make) & MacOS (XCode) partially.
 
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request with your changes. Make sure to follow the project's coding standards and optionally include tests for new features.

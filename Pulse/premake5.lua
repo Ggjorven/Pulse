@@ -42,7 +42,7 @@ project "Pulse"
 		staticruntime "on"
 
 	filter "system:macosx"
-		systemversion "%{MacOSVersion}"
+		systemversion(MacOSVersion)
 		staticruntime "on"
 
 		-- Note: XCode only needs the full pchheader path
@@ -63,8 +63,3 @@ project "Pulse"
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "on"
-
-	filter "configurations:Dist"
-		defines "APP_DIST"
-		runtime "Release"
-		optimize "Full"

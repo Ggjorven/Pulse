@@ -46,7 +46,7 @@ project "Sandbox"
 		staticruntime "on"
 
 	filter "system:macosx"
-		systemversion "%{MacOSVersion}"
+		systemversion(MacOSVersion)
 		staticruntime "on"
 
 		-- Note: If we don't add the header files to the externalincludedirs
