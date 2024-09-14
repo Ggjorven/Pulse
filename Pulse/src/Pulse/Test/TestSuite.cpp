@@ -3,37 +3,70 @@
 
 #include "Pulse/Core/Logging.hpp"
 
+#include "Pulse/Text/Format.hpp"
+
 namespace Pulse
 {
 
 	// Anonymous namespace to ensure it can't be accessed through extern
 	namespace
 	{
-		// Note: This is a pointer, since otherwise we can't be sure it has been initialized
-		// by the time _AddTest gets called for the first time.
-		static std::unordered_map<std::string, TestFn>* s_Tests = {};
+		// Note: We use functions to make sure that the memory is initialized the first time we call it.
+		// If we use just static variables they are not initialized in time.
+		static std::string& GetRunningTest()
+		{
+			static std::string runningTest = "None";
+			return runningTest;
+		}
+
+		static std::unordered_map<std::string, TestFn>& GetTests()
+		{
+			static std::unordered_map<std::string, TestFn> tests = {};
+			return tests;
+		}
+
+		static std::unordered_map<std::string, TestResult>& GetTestResults()
+		{
+			static std::unordered_map<std::string, TestResult> results = {};
+			return results;
+		}
 	}
 
 	void TestSuite::Run()
 	{
 		size_t testID = 1;
-		for (const auto& [name, func] : *s_Tests)
+		for (const auto& [name, func] : GetTests())
 		{
-			bool result = func();
-			if (result)
-				Logger::Log(LogLevel::Info, "[{0}/{1}] Test '{2}' passed.", testID++, s_Tests->size(), name);
+			// Set the currently running test
+			GetRunningTest() = name;
+			
+			// Run the test
+			func();
+			
+			// Check results
+			TestResult& result = GetTestResults()[name];
+			if (result.Success)
+				Logger::Log(LogLevel::Info, "[{0}/{1}] Test '{2}' passed.", testID++, GetTests().size(), name);
 			else
-				Logger::Log(LogLevel::Error, "[{0}/{1}] Test '{2}' failed.", testID++, s_Tests->size(), name);
+				Logger::Log(LogLevel::Error, "[{0}/{1}] Test '{2}' failed.\n\tFail message: {3}", testID++, GetTests().size(), name, result.FailMessage);
 		}
 	}
 
 	void TestSuite::_AddTest(const std::string& name, TestFn test)
 	{
-		// Manually initialize s_Tests
-		if (s_Tests == nullptr)
-			s_Tests = new std::unordered_map<std::string, TestFn>();
+		GetTests().insert(std::make_pair(name, std::move(test)));
+	}
 
-		s_Tests->insert(std::make_pair(name, std::move(test)));
+	void TestSuite::_TestEq(bool result, const char* expr, const char* file, int line)
+	{
+		GetTestResults()[GetRunningTest()].Success = result;
+		GetTestResults()[GetRunningTest()].FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
+	}
+
+	void TestSuite::_TestResult(bool result, const char* expr, const char* file, int line)
+	{
+		GetTestResults()[GetRunningTest()].Success = result;
+		GetTestResults()[GetRunningTest()].FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
 	}
 
 }

@@ -127,7 +127,7 @@ namespace Pulse::Enum
 		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
 		inline constexpr E operator ~ (E rhs) noexcept
 		{
-			return static_cast<E>(~static_cast<underlying_type_t<E>>(rhs));
+			return static_cast<E>(~static_cast<std::underlying_type_t<E>>(rhs));
 		}
 
 		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>

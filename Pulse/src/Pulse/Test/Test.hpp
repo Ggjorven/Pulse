@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Pulse/Text/Format.hpp"
+
 #include "Pulse/Test/TestSuite.hpp"
 
 ///////////////////////////////////////////////////////////
@@ -30,12 +32,12 @@ inline static const int dummy##id = (Run##id(), 0);
 ///////////////////////////////////////////////////////////
 // Main macros
 ///////////////////////////////////////////////////////////
-#define TEST_EQ(x, y) return x == y
+#define TEST_EQ(x, y) ::Pulse::TestSuite::_TestEq((x == y), ::Pulse::Text::Format("({0} == {1})", #x, #y).c_str(), __FILE__, __LINE__)
 // Note: True mean success
-#define TEST_RESULT(x) return x 
+#define TEST_RESULT(x) ::Pulse::TestSuite::_TestResult((x), ::Pulse::Text::Format("({0})", #x).c_str(), __FILE__, __LINE__)
 
 #define TEST(name, body)									\
-inline bool _PulseTest_##name()								\
+inline void _PulseTest_##name()								\
 body														\
 															\
-RUN_FUNCTION(__COUNTER__, Pulse::TestSuite::_AddTest, #name, &_PulseTest_##name)
+RUN_FUNCTION(__COUNTER__, ::Pulse::TestSuite::_AddTest, #name, &_PulseTest_##name)
