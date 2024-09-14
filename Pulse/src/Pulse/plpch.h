@@ -19,6 +19,7 @@
 #include <stdexcept>
 
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <vector>
 #include <set>

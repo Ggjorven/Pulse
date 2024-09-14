@@ -1,17 +1,17 @@
 #pragma once
 
-#include <string>
+#include <Pulse/Core/Defines.hpp>
 
-#include "Tests/Test.hpp"
+#include <Pulse/Test/Test.hpp>
 
-class CoreTest : public Test
+using namespace Pulse;
+
+TEST(NumericSize1, 
 {
-public:
-	CoreTest();
-	~CoreTest();
+	TEST_EQ(Numeric::Max<i8>(), INT8_MAX);
+});
 
-	TestResult Execute() override;
-
-public:
-	inline static constinit const std::string_view Name = "Core";
-};
+TEST(NumericSize2,
+{
+	TEST_EQ(Numeric::Max<i8>(), 0);
+});

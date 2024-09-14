@@ -1,20 +1,13 @@
+/*
 #include <iostream>
 
 #include <Pulse/Core/Core.hpp>
 #include <Pulse/Core/Logging.hpp>
 
-#include "Tests/Tester.hpp"
+#include <Pulse/Test/TestSuite.hpp>
 
 // All tests
 #include "Tests/Core.hpp"
-#include "Tests/Text.hpp"
-#include "Tests/Types.hpp"
-#include "Tests/Events.hpp"
-#include "Tests/ECS.hpp"
-#include "Tests/Classes.hpp"
-#include "Tests/Enum.hpp"
-#include "Tests/Thread.hpp"
-#include "Tests/Time.hpp"
 
 static void LogCallback(Pulse::LogLevel level, std::string message)
 {
@@ -41,29 +34,70 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 	}
 }
 
-static void AssertCallback(bool success, std::string message)
-{
-	if (success) return;
-
-	Pulse::Logger::Log(LogLevel::Fatal, "Assertion failed: {0}", message);
-	PULSE_DEBUG_BREAK();
-}
-
 int main(int argc, char* argv[])
 {
 	using namespace Pulse;
 
-	Logger::Init(&LogCallback, &AssertCallback);
-
-	Tester::Run<CoreTest>();
-	Tester::Run<TextTest>();
-	Tester::Run<TypesTest>();
-	Tester::Run<EventsTest>();
-	Tester::Run<ECSTest>();
-	Tester::Run<ClassesTest>();
-	Tester::Run<EnumTest>();
-	Tester::Run<ThreadTest>();
-	Tester::Run<TimeTest>();
+	Logger::Init(&LogCallback);
+	
+	TestSuite::Run();
 
 	return 0;
+}
+*/
+#include <iostream>
+
+#include "Pulse/Reflection/ClassRegistry.hpp"
+
+class ExampleClass : public Pulse::Reflection::IReflectable
+{
+    PULSE_REFLECT(ExampleClass, int, double) // Registering constructor with (int, double)
+    PULSE_REFLECT(ExampleClass, int, int, int) // Registering constructor with (int, double)
+
+public:
+    ExampleClass(int a, int b, int c)
+    {
+        std::cout << "ExampleClass constructor called with: " << a << ", " << b << ", " << c << "\n";
+    }
+    ExampleClass(int a, double b)
+    {
+        std::cout << "ExampleClass constructor called with: " << a << ", " << b << "\n";
+    }
+
+    void DoSomething(int x)
+    {
+        std::cout << "DoSomething called with: " << x << "\n";
+    }
+
+    static void RegisterMemberFunctions()
+    {
+        Pulse::Reflection::ClassRegistry::Get().RegisterMemberFunction("ExampleClass", "DoSomething", [](IReflectable* instance, const std::vector<std::any>& args)
+            {
+                auto obj = static_cast<ExampleClass*>(instance);
+                int x = std::any_cast<int>(args[0]);
+                obj->DoSomething(x);
+            });
+    }
+};
+
+int main()
+{
+    using namespace Pulse::Reflection;
+
+    // Register ExampleClass and its member functions
+    ExampleClass::RegisterReflection();
+    ExampleClass::RegisterMemberFunctions();
+
+    // Create an instance of ExampleClass with constructor arguments (int, double)
+    std::vector<std::any> constructorArgs = { 42, 3.14 };
+    Pulse::Ref<IReflectable> instance = ClassRegistry::Get().CreateInstance("ExampleClass", constructorArgs);
+
+    std::vector<std::any> constructorArgs2 = { 42, 69, 420 };
+    Pulse::Ref<IReflectable> instance2 = ClassRegistry::Get().CreateInstance("ExampleClass", constructorArgs2);
+
+    // Call member function "DoSomething" with arguments
+    std::vector<std::any> functionArgs = { 100 };
+    ClassRegistry::Get().CallMemberFunction("ExampleClass", "DoSomething", instance.Raw(), functionArgs);
+
+    return 0;
 }

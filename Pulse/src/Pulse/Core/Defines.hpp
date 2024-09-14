@@ -29,20 +29,8 @@ namespace Pulse
     namespace Numeric
     {
         // Get max value of T
-        template<typename T> inline consteval T Max() { return std::numeric_limits<T>::max(); }
-
-        template<> inline consteval i8 Max() { return INT8_MAX; }
-        template<> inline consteval i16 Max() { return INT16_MAX; }
-        template<> inline consteval i32 Max() { return INT32_MAX; }
-        template<> inline consteval i64 Max() { return INT64_MAX; }
-
-        template<> inline consteval u8 Max() { return UINT8_MAX; }
-        template<> inline consteval u16 Max() { return UINT16_MAX; }
-        template<> inline consteval u32 Max() { return UINT32_MAX; }
-        template<> inline consteval u64 Max() { return UINT64_MAX; }
-
-        template<> inline consteval f32 Max() { return std::numeric_limits<float>::max(); }
-        template<> inline consteval f64 Max() { return std::numeric_limits<double>::max(); }
+        template<typename T> 
+        inline consteval T Max() { return std::numeric_limits<T>::max(); }
     }
 
 }

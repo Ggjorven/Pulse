@@ -26,19 +26,17 @@
 #endif
 
 // Check for proper C++ version
-/* // Note: Version checking doesn't work yet. // TODO: ...
 #if defined(_MSC_VER)
-	#if _MSC_VER < 1933
-		#error Pulse: Compiler doesnt support C++23
+	#if _MSC_VER < 1929
+		#error Pulse: Compiler doesn't support C++20
 	#endif
-#elif defined(__GNUC__) || defined(__clang__)
-	#if __cplusplus < 202300L
-		#error Pulse: Compiler doesnt support C++23
+#elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
+	#if __cplusplus < 202002L
+		#error Pulse: Compiler doesn't support C++20
 	#endif
 #else
-	#error Pulse: Unknown compiler, cannot determine C++23 support.
+	#error Pulse: Unknown compiler, cannot determine C++20 support.
 #endif
-*/
 
 // Define debug break // To disable debug breaks #define PULSE_DISABLE_ASSERT
 #if !(defined(PULSE_DISABLE_ASSERT))
