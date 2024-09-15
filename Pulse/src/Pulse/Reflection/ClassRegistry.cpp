@@ -3,20 +3,28 @@
 
 #include "Pulse/Core/Logging.hpp"
 
+#include "Pulse/Reflection/Reflective.hpp"
+
 namespace Pulse::Reflection
 {
 
 	// Anonymous namespace to ensure it can't be accessed through extern
 	namespace 
 	{
-		static Unique<ClassRegistry> s_Instance = Unique<ClassRegistry>::Create();
+		// Note: We use functions to make sure that the memory is initialized the first time we call it.
+		// If we use just static variables they are not initialized in time.
+		static ClassRegistry& GetRegistry()
+		{
+			static ClassRegistry registry = {};
+			return registry;
+		}
 	}
 
 
 
 	ClassRegistry& ClassRegistry::Get()
 	{
-		return *s_Instance;
+		return GetRegistry();
 	}
 
 	void ClassRegistry::RegisterClass(const std::string& className, ClassRegistry::Constructor ctor, ClassRegistry::Destructor dtor)
@@ -38,10 +46,12 @@ namespace Pulse::Reflection
 		return nullptr;
 	}
 
-	void ClassRegistry::CallMemberFunction(const std::string& className, const std::string& functionName, IReflectable* instance, const std::vector<std::any>& args)
+	std::any ClassRegistry::CallMemberFunction(const std::string& className, const std::string& functionName, Reflective* instance, const std::vector<std::any>& args)
 	{
 		if (m_MemberFunctions.contains(className))
-			m_MemberFunctions[className][functionName](instance, args);
+			return m_MemberFunctions[className][functionName](instance, args);
+
+		return {};
 	}
 
 }

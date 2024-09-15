@@ -7,25 +7,19 @@
 #include "Pulse/Core/Unique.hpp"
 
 #include <any>
+#include <utility>
 #include <functional>
 
 namespace Pulse::Reflection
 {
 
-    // Interface from which all classes should inherit
-    class IReflectable : public RefCounted 
-    { 
-    public:
-        virtual ~IReflectable() = default; 
-    };
-
-
+    class Reflective;
 
     // Registry for class and member function information
     class ClassRegistry
     {
     public:
-        using ValueContainer = Ref<IReflectable>;
+        using ValueContainer = Ref<Reflective>;
         using ArgsContainer = const std::vector<std::any>&;
         
         template<typename Key, typename Value>
@@ -33,8 +27,8 @@ namespace Pulse::Reflection
 
     public:
         using Constructor = std::function<ValueContainer(ArgsContainer)>;
-        using Destructor = std::function<void(IReflectable*)>;
-        using MemberFunction = std::function<void(IReflectable*, ArgsContainer)>;
+        using Destructor = std::function<void(Reflective*)>;
+        using MemberFunction = std::function<std::any(Reflective*, ArgsContainer)>;
 
     public:
         static ClassRegistry& Get();
@@ -45,16 +39,12 @@ namespace Pulse::Reflection
 
         ValueContainer CreateInstance(const std::string& className, const std::vector<std::any>& args = {});
 
-        void CallMemberFunction(const std::string& className, const std::string& functionName, IReflectable* instance, const std::vector<std::any>& args = {});
+        std::any CallMemberFunction(const std::string& className, const std::string& functionName, Reflective* instance, const std::vector<std::any>& args = {});
 
     private:
-        ClassRegistry() = default;
-
         Map<std::string, Constructor> m_Constructors = {};
         Map<std::string, Destructor> m_Destructors = {};
         Map<std::string, Map<std::string, MemberFunction>> m_MemberFunctions = {};
-
-        friend Unique<ClassRegistry>;
     };
 
     // Variadic template for argument unpacking in constructors
@@ -75,11 +65,11 @@ namespace Pulse::Reflection
     // Macro to register a class with a constructor that takes arguments
     #define PULSE_REFLECT(cls, ...) \
 public: \
-        static Pulse::Ref<IReflectable> Create(const std::vector<std::any>& args) \
+        static Pulse::Ref<Reflective> Create(const std::vector<std::any>& args) \
     { \
         return Pulse::Reflection::CreateObject<cls, __VA_ARGS__>(args); \
     } \
-        static void Destroy(IReflectable* obj) { delete static_cast<cls*>(obj); } \
+        static void Destroy(Reflective* obj) { delete static_cast<cls*>(obj); } \
         static void RegisterReflection() { \
         \
             Pulse::Reflection::ClassRegistry::Get().RegisterClass(#cls, Create, Destroy); \
