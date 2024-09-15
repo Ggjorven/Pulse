@@ -22,36 +22,42 @@ namespace Pulse::Reflection
 
 
 
-	ClassRegistry& ClassRegistry::Get()
+	u64 TypeHash::operator () (const std::vector<u64>& typeHashes) const
 	{
-		return GetRegistry();
+		u64 seed = 0;
+		for (u64 hash : typeHashes)
+			Hash::Mix(seed, hash);
+
+		return seed;
 	}
 
-	void ClassRegistry::RegisterClass(const std::string& className, ClassRegistry::Constructor ctor, ClassRegistry::Destructor dtor)
+	void ClassRegistry::AddClass(const std::string& className, const std::vector<u64>& constructorTypeHashes, Constructor constructor, Destructor destructor)
 	{
-		m_Constructors[className] = ctor;
-		m_Destructors[className] = dtor;
+		m_Constructors[className][constructorTypeHashes] = std::move(constructor);
+		
+		if (destructor) 
+			m_Destructors[className] = std::move(destructor);
 	}
 
-	void ClassRegistry::RegisterMemberFunction(const std::string& className, const std::string& functionName, ClassRegistry::MemberFunction func)
+	ClassRegistry::ValueContainer ClassRegistry::Instantiate(const std::string& className, ArgsContainer args)
 	{
-		m_MemberFunctions[className][functionName] = func;
-	}
+		// Retrieve the hash codes for types passed in
+		std::vector<u64> hashes;
+		hashes.reserve(args.size());
 
-	ClassRegistry::ValueContainer ClassRegistry::CreateInstance(const std::string& className, const std::vector<std::any>& args)
-	{
+		for (const auto& arg : args)
+			hashes.push_back(arg.type().hash_code());
+
+		// Call the constructor
 		if (m_Constructors.contains(className))
-			return m_Constructors[className](args);
+			return m_Constructors[className][hashes](args);
 
 		return nullptr;
 	}
 
-	std::any ClassRegistry::CallMemberFunction(const std::string& className, const std::string& functionName, Reflective* instance, const std::vector<std::any>& args)
+	ClassRegistry& ClassRegistry::Get()
 	{
-		if (m_MemberFunctions.contains(className))
-			return m_MemberFunctions[className][functionName](instance, args);
-
-		return {};
+		return GetRegistry();
 	}
 
 }

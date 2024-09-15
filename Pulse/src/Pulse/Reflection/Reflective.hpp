@@ -17,15 +17,6 @@ namespace Pulse::Reflection
 	public:
 		Reflective() = default;
 		virtual ~Reflective() = default;
-	
-
-
-		//template<typename ...Args>
-		//static ClassRegistry::ValueContainer Create(const std::string& cls, Args&& ...args)
-		//{
-		//	std::vector<std::any> constructorArgs = { args... };
-		//	return ClassRegistry::Get().CreateInstance(cls, constructorArgs);
-		//}
 	};
 
 }

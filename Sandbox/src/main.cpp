@@ -5,6 +5,9 @@
 
 #include <Pulse/Test/TestSuite.hpp>
 
+#include <Pulse/Reflection/Reflective.hpp> // TODO: Remove
+#include <Pulse/Reflection/ClassRegistry.hpp> // TODO: Remove
+
 // All tests
 #include "Tests/Core.hpp"
 #include "Tests/Enum.hpp"
@@ -36,6 +39,17 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 	}
 }
 
+class A : public Pulse::Reflection::Reflective
+{
+public:
+	REFLECT_CLASS(A, int, float)
+
+	A(int a, float b)
+	{
+		Pulse::Logger::Log(Pulse::LogLevel::Trace, "A called with {0}, {1}", a, b);
+	}
+};
+
 int main(int argc, char* argv[])
 {
 	using namespace Pulse;
@@ -43,6 +57,11 @@ int main(int argc, char* argv[])
 	Logger::Init(&LogCallback);
 	
 	TestSuite::Run();
+
+	// ///////////////////////
+	A::_RegisterReflection();
+
+	auto i = Reflection::ClassRegistry::Get().Instantiate("A", { 69, 420.69f });
 
 	return 0;
 }
