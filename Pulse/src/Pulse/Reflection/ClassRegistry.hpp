@@ -6,7 +6,11 @@
 #include "Pulse/Core/Ref.hpp"
 #include "Pulse/Core/Unique.hpp"
 
+#include "Pulse/Types/TypeUtils.hpp"
+
 #include "Pulse/Utils/Hash.hpp"
+#include "Pulse/Utils/Utils.hpp"
+#include "Pulse/Utils/Macros.hpp"
 
 #include <any>
 #include <vector>
@@ -23,10 +27,7 @@ namespace Pulse::Reflection
     // Type hashing utilities
     ///////////////////////////////////////////////////////////
     template<typename... Types>
-    std::vector<u64> GetTypeHashes()
-    {
-        return { typeid(Types).hash_code()... };
-    }
+    constexpr std::vector<u64> GetTypeHashes() { return { typeid(Types).hash_code()... }; }
 
     struct TypeHash
     {
@@ -52,10 +53,11 @@ namespace Pulse::Reflection
         using MemberFunction = std::function<std::any(Reflective*, ArgsContainer)>;
 
     public:
-        // Can be called multiple times for multiple constructors
-        void AddClass(const std::string& className, const std::vector<u64>& constructorTypeHashes, Constructor constructor, Destructor destructor = nullptr);
+        void AddClass(const std::string& className, const std::vector<u64>& constructorTypeHashes, Constructor constructor, Destructor destructor);
+        void AddMemFn(const std::string& className, const std::string& fnName, const std::vector<u64>& fnTypeHashes, MemberFunction func);
 
         ValueContainer Instantiate(const std::string& className, ArgsContainer args = {});
+        std::any RunMember(const std::string& className, const std::string& fnName, Reflective* instance, ArgsContainer args = {});
 
     public:
         static ClassRegistry& Get();
@@ -67,6 +69,7 @@ namespace Pulse::Reflection
     };
 
 
+
     ///////////////////////////////////////////////////////////
     // Helper function for creating reflection objects
     ///////////////////////////////////////////////////////////
@@ -74,15 +77,7 @@ namespace Pulse::Reflection
     template <typename T, typename... Args>
     ClassRegistry::ValueContainer CreateObject(const std::vector<std::any>& args)
     {
-        Logger::Assert((args.size() == sizeof...(Args)), "Argument size mismatch for class constructor");
-
-        // Use a helper lambda to unpack and cast the arguments from std::any
-        auto unpackArgs = [&]<std::size_t... Is>(std::index_sequence<Is...>)
-        {
-            return Ref<T>::Create(std::any_cast<Args>(args[Is])...);
-        };
-
-        return unpackArgs(std::index_sequence_for<Args...>{});
+        return Utils::UseNativeArgTypesInFunc<decltype(&Ref<T>::template Create<Args...>), Args...>(&Ref<T>::Create, args);
     }
 
 
@@ -90,23 +85,38 @@ namespace Pulse::Reflection
     ///////////////////////////////////////////////////////////
     // Macro for easy class reflection (must inherit from Reflective)
     ///////////////////////////////////////////////////////////
-    // TODO: Support multiple constructors and member functions
-    #define REFLECT_CLASS(cls, ...)                                                                     \
-    public:                                                                                             \
-        static Pulse::Ref<Pulse::Reflection::Reflective> _Create(const std::vector<std::any>& args)     \
-        {                                                                                               \
-            return Pulse::Reflection::CreateObject<cls, __VA_ARGS__>(args);                             \
-        }                                                                                               \
-                                                                                                        \
-        static void _Destroy(Reflective* obj)                                                           \
-        {                                                                                               \
-            delete static_cast<cls*>(obj);                                                              \
-        }                                                                                               \
-                                                                                                        \
-        static void _RegisterReflection()                                                               \
-        {                                                                                               \
-            const std::vector<Pulse::u64> typeHashes = Pulse::Reflection::GetTypeHashes<__VA_ARGS__>(); \
-            Pulse::Reflection::ClassRegistry::Get().AddClass(#cls, typeHashes, &_Create, &_Destroy);    \
-        }
+    
+// Example usage: REFLECT_CLASS_CTOR(clsName, int, double);
+#define REFLECT_CLASS_CTOR(cls, ...)                                                                                                    \
+RUN_FUNCTION_NN(__COUNTER__,                                                                                                            \
+    ::Pulse::Reflection::ClassRegistry::Get().AddClass, #cls,                                                                           \
+    ::Pulse::Reflection::GetTypeHashes<__VA_ARGS__>(),                                                                                  \
+    &::Pulse::Reflection::CreateObject<cls, __VA_ARGS__>,                                                                               \
+    [](::Pulse::Reflection::Reflective* obj){ delete static_cast<cls*>(obj); }                                                          \
+)
+
+
+// Example usage: REFLECT_CLASS_MEMFN(clsName, MyMemFunc, char, int, char*);
+#define REFLECT_CLASS_MEMFN(cls, fnName, retType, ...)                                                                                  \
+RUN_FUNCTION_NN(__COUNTER__,                                                                                                            \
+    ::Pulse::Reflection::ClassRegistry::Get().AddMemFn, #cls, #fnName,                                                                  \
+    ::Pulse::Reflection::GetTypeHashes<__VA_ARGS__>(),                                                                                  \
+    [](::Pulse::Reflection::Reflective* instance, const std::vector<std::any>& args) -> std::any                                        \
+    {                                                                                                                                   \
+        auto obj = static_cast<cls*>(instance);                                                                                         \
+        auto func = ::Pulse::Utils::ToStatic<cls, retType, __VA_ARGS__>(&cls::fnName);                                                  \
+                                                                                                                                        \
+        if constexpr (std::is_void_v<retType>)                                                                                          \
+        {                                                                                                                               \
+            ::Pulse::Utils::UseNativeArgTypesInSMemFunc<decltype(func), cls, __VA_ARGS__>(std::move(func), obj, args);                  \
+            return {};                                                                                                                  \
+        }                                                                                                                               \
+        else                                                                                                                            \
+        {                                                                                                                               \
+            return std::any(::Pulse::Utils::UseNativeArgTypesInSMemFunc<decltype(func), cls, __VA_ARGS__>(std::move(func), obj, args)); \
+        }                                                                                                                               \
+    }                                                                                                                                   \
+)
+
 
 }

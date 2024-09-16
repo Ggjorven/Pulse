@@ -39,6 +39,11 @@ namespace Pulse::Reflection
 			m_Destructors[className] = std::move(destructor);
 	}
 
+	void ClassRegistry::AddMemFn(const std::string& className, const std::string& fnName, const std::vector<u64>& fnTypeHashes, MemberFunction func)
+	{
+		m_MemberFunctions[className][fnName][fnTypeHashes] = std::move(func);
+	}
+
 	ClassRegistry::ValueContainer ClassRegistry::Instantiate(const std::string& className, ArgsContainer args)
 	{
 		// Retrieve the hash codes for types passed in
@@ -53,6 +58,22 @@ namespace Pulse::Reflection
 			return m_Constructors[className][hashes](args);
 
 		return nullptr;
+	}
+
+	std::any ClassRegistry::RunMember(const std::string& className, const std::string& fnName, Reflective* instance, ArgsContainer args)
+	{
+		// Retrieve the hash codes for types passed in
+		std::vector<u64> hashes;
+		hashes.reserve(args.size());
+
+		for (const auto& arg : args)
+			hashes.push_back(arg.type().hash_code());
+
+		// Call the function
+		if (m_MemberFunctions.contains(className) && m_MemberFunctions.at(className).contains(fnName))
+			return m_MemberFunctions[className][fnName][hashes](instance, args);
+
+		return {};
 	}
 
 	ClassRegistry& ClassRegistry::Get()

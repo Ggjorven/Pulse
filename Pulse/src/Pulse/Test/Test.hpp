@@ -1,33 +1,6 @@
 #pragma once
 
-#include "Pulse/Text/Format.hpp"
-
-#include "Pulse/Test/TestSuite.hpp"
-
-///////////////////////////////////////////////////////////
-// Helper macros
-///////////////////////////////////////////////////////////
-#define RUN_FUNCTION_HELPER(id, functionName, ...)			\
-namespace													\
-{															\
-	inline void Run##id()									\
-	{														\
-		functionName(__VA_ARGS__);							\
-	}														\
-															\
-	static int dummy##id = (Run##id(), 0);					\
-}
-
-#define RUN_FUNCTION_NN_HELPER(id, functionName, ...)		\
-inline static void Run##id()								\
-{															\
-    functionName(__VA_ARGS__);								\
-}															\
-															\
-inline static const int dummy##id = (Run##id(), 0);
-
-#define RUN_FUNCTION(id, functionName, ...)				RUN_FUNCTION_HELPER(id, functionName, __VA_ARGS__)
-#define RUN_FUNCTION_NONAMESPACE(id, functionName, ...) RUN_FUNCTION_NN_HELPER(id, functionName, __VA_ARGS__)
+#include "Pulse/Utils/Macros.hpp"
 
 ///////////////////////////////////////////////////////////
 // Main macros
