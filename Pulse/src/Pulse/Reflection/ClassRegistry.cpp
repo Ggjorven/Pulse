@@ -31,7 +31,7 @@ namespace Pulse::Reflection
 		return seed;
 	}
 
-	void ClassRegistry::AddClass(const std::string& className, const std::vector<u64>& constructorTypeHashes, Constructor constructor, Destructor destructor)
+	void ClassRegistry::AddClass(const std::string& className, const std::vector<u64>& constructorTypeHashes, Constructor&& constructor, Destructor&& destructor)
 	{
 		m_Constructors[className][constructorTypeHashes] = std::move(constructor);
 		
@@ -42,6 +42,12 @@ namespace Pulse::Reflection
 	void ClassRegistry::AddMemFn(const std::string& className, const std::string& fnName, const std::vector<u64>& fnTypeHashes, MemberFunction func)
 	{
 		m_MemberFunctions[className][fnName][fnTypeHashes] = std::move(func);
+	}
+
+	void ClassRegistry::AddMemVar(const std::string& className, const std::string& varName, MemberSetFn&& setter, MemberGetFn&& getter)
+	{
+		m_MemberVarSetters[className][varName] = std::move(setter);
+		m_MemberVarGetters[className][varName] = std::move(getter);
 	}
 
 	ClassRegistry::ValueContainer ClassRegistry::Instantiate(const std::string& className, ArgsContainer args)
@@ -74,6 +80,16 @@ namespace Pulse::Reflection
 			return m_MemberFunctions[className][fnName][hashes](instance, args);
 
 		return {};
+	}
+
+	void ClassRegistry::SetMemVar(const std::string& className, const std::string& varName, Reflective* instance, std::any value)
+	{
+		return m_MemberVarSetters[className][varName](instance, value);
+	}
+
+	std::any ClassRegistry::GetMemVar(const std::string& className, const std::string& varName, Reflective* instance)
+	{
+		return m_MemberVarGetters[className][varName](instance);
 	}
 
 	ClassRegistry& ClassRegistry::Get()

@@ -17,6 +17,14 @@ namespace Pulse::Reflection
 	public:
 		Reflective() = default;
 		virtual ~Reflective() = default;
+
+		// TODO: Add more member functionality
+
+		template<typename ...Args>
+		static Ref<Reflective> Create(const std::string& className, Args&& ...args)
+		{
+			return ClassRegistry::Get().Instantiate(className, { std::any_cast<Args>(args)... });
+		}
 	};
 
 }

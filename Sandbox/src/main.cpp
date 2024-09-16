@@ -42,14 +42,6 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 class A : public Pulse::Reflection::Reflective
 {
 public:
-	REFLECT_CLASS_CTOR(A, int, float);
-	REFLECT_CLASS_CTOR(A, float, double);
-
-	REFLECT_CLASS_MEMFN(A, Member, int, int, float);
-	REFLECT_CLASS_MEMFN(A, Member, int, float);
-
-	REFLECT_CLASS_MEMFN(A, Member2, void, char);
-
 	A(int a, float b)
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(int, float) A called with {0}, {1}", a, b);
@@ -76,6 +68,20 @@ public:
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(char) Member2 called with {0}", a);
 	}
+
+private:
+	int privateVar = 5000;
+
+	// TODO: Make clean
+	REFLECT_CLASS_CTOR(A, int, float);
+	REFLECT_CLASS_CTOR(A, float, double);
+
+	REFLECT_CLASS_MEMFN(A, Member, int, int, float);
+	REFLECT_CLASS_MEMFN(A, Member, int, float);
+
+	REFLECT_CLASS_MEMFN(A, Member2, void, char);
+
+	REFLECT_CLASS_MEMVAR(A, int, privateVar);
 };
 
 int main(int argc, char* argv[])
@@ -83,20 +89,13 @@ int main(int argc, char* argv[])
 	using namespace Pulse;
 
 	Logger::Init(&LogCallback);
-	
+
 	TestSuite::Run();
 
-	// ///////////////////////
-	auto i = Reflection::ClassRegistry::Get().Instantiate("A", { 69, 420.69f });
-	auto i2 = Reflection::ClassRegistry::Get().Instantiate("A", { 69.0f, 420.6999999 });
-
-	int r = std::any_cast<int>(Reflection::ClassRegistry::Get().RunMember("A", "Member", i.Raw(), { 79, 123.45f }));
-	Pulse::Logger::Log(Pulse::LogLevel::Trace, "Result value: {0}", r);
-
-	r = std::any_cast<int>(Reflection::ClassRegistry::Get().RunMember("A", "Member", i.Raw(), { 789.12f }));
-	Pulse::Logger::Log(Pulse::LogLevel::Trace, "Result value: {0}", r);
-
-	Reflection::ClassRegistry::Get().RunMember("A", "Member2", i.Raw(), { '=' });
+	////////////////////////////////////////
+	// Reflection testing // TODO: Remove
+	////////////////////////////////////////
+	auto instance = Reflection::Reflective::Create("A", 54.0f, 0.0);
 
 	return 0;
 }
