@@ -21,6 +21,8 @@
 namespace Pulse::Reflection
 {
 
+    typedef char Empty; // Used for :: resolution. (Ex. ::Pulse::Reflection::Empty)
+
     // Forward-declare Reflective
     class Reflective;
 
@@ -44,7 +46,7 @@ namespace Pulse::Reflection
     class ClassRegistry
     {
     public:
-        using ValueContainer = Ref<Reflective>;
+        using ValueContainer = Reflective*;
         using ArgsContainer = const std::vector<std::any>&;
         
         template<typename Key, typename Value, typename Hash = std::hash<Key>>
@@ -93,7 +95,8 @@ namespace Pulse::Reflection
     template <typename T, typename... Args>
     ClassRegistry::ValueContainer CreateObject(const std::vector<std::any>& args)
     {
-        return Utils::UseNativeArgTypesInFunc<decltype(&Ref<T>::template Create<Args...>), Args...>(&Ref<T>::Create, args);
+        auto create = [](Args&& ...args) -> T* { return new T(std::forward<Args>(args)...); };
+        return Utils::UseNativeArgTypesInFunc<decltype(create), Args...>(std::move(create), args);
     }
 
 
@@ -105,7 +108,7 @@ namespace Pulse::Reflection
     // as to not interfere with access specifiers
     ///////////////////////////////////////////////////////////
     // Example usage: REFLECT_CLASS_CTOR(clsName, int, double);
-    #define REFLECT_CLASS_CTOR(cls, ...)                                                                                                    \
+    #define PULSE_REFLECT_CLASS_CTOR(cls, ...)                                                                                              \
         private:                                                                                                                            \
         RUN_FUNCTION_NN(__COUNTER__,                                                                                                        \
         ::Pulse::Reflection::ClassRegistry::Get().AddClass, #cls,                                                                           \
@@ -116,7 +119,7 @@ namespace Pulse::Reflection
 
 
     // Example usage: REFLECT_CLASS_MEMFN(clsName, MyMemFunc, char, int, char*);
-    #define REFLECT_CLASS_MEMFN(cls, fnName, retType, ...)                                                                                  \
+    #define PULSE_REFLECT_CLASS_MEMFN(cls, fnName, retType, ...)                                                                            \
         private:                                                                                                                            \
         RUN_FUNCTION_NN(__COUNTER__,                                                                                                        \
         ::Pulse::Reflection::ClassRegistry::Get().AddMemFn, #cls, #fnName,                                                                  \
@@ -141,7 +144,7 @@ namespace Pulse::Reflection
     ///////////////////////////////////////////////////////////
     // Member variables
     ///////////////////////////////////////////////////////////
-    #define REFLECT_CLASS_MEMVAR_GENERIC(cls, type, name)                                                                                   \
+    #define PULSE_REFLECT_CLASS_MEMVAR_GENERIC(cls, type, name)                                                                             \
         public:                                                                                                                             \
             void _Reflection_Set##name(const type& val)                                                                                     \
             {                                                                                                                               \
@@ -154,8 +157,8 @@ namespace Pulse::Reflection
             }
 
     // Example usage: REFLECT_CLASS_MEMVAR(clsName, MyMemFunc, char, int, char*);
-    #define REFLECT_CLASS_MEMVAR(cls, type, name)                                                                                           \
-        REFLECT_CLASS_MEMVAR_GENERIC(cls, type, name)                                                                                       \
+    #define PULSE_REFLECT_CLASS_MEMVAR(cls, type, name)                                                                                     \
+        PULSE_REFLECT_CLASS_MEMVAR_GENERIC(cls, type, name)                                                                                 \
         private:                                                                                                                            \
         RUN_FUNCTION_NN(__COUNTER__,                                                                                                        \
         ::Pulse::Reflection::ClassRegistry::Get().AddMemVar, #cls, #name,                                                                   \

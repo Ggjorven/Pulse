@@ -5,6 +5,7 @@
 
 #include <Pulse/Test/TestSuite.hpp>
 
+#include <Pulse/Reflection/Attributes.hpp> // TODO: Remove
 #include <Pulse/Reflection/Reflective.hpp> // TODO: Remove
 #include <Pulse/Reflection/ClassRegistry.hpp> // TODO: Remove
 
@@ -42,46 +43,41 @@ static void LogCallback(Pulse::LogLevel level, std::string message)
 class A : public Pulse::Reflection::Reflective
 {
 public:
+	[[ PulseRefl::ExportCtor(public, A, int, float) ]]
 	A(int a, float b)
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(int, float) A called with {0}, {1}", a, b);
 	}
 
+	[[ PulseRefl::ExportCtor(public, A, float, double) ]]
 	A(float a, double b)
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(float, double) A called with {0}, {1}", a, b);
 	}
 
+	[[ PulseRefl::ExportMemFn(public, A, Member, int, int, float) ]]
 	int Member(int a, float b)
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(int, float) Member called with {0}, {1}", a, b);
 		return 420;
 	}
 
+	[[ PulseRefl::ExportMemFn(public, A, Member, int, float) ]]
 	int Member(float a)
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(float) Member called with {0}", a);
 		return 69;
 	}
 
+	[[ PulseRefl::ExportMemFn(public, A, Member2, void, char) ]]
 	void Member2(char a)
 	{
 		Pulse::Logger::Log(Pulse::LogLevel::Trace, "(char) Member2 called with {0}", a);
 	}
 
 private:
+	[[ PulseRefl::ExportMemVar(public, A, int, privateVar) ]]
 	int privateVar = 5000;
-
-	// TODO: Make clean
-	REFLECT_CLASS_CTOR(A, int, float);
-	REFLECT_CLASS_CTOR(A, float, double);
-
-	REFLECT_CLASS_MEMFN(A, Member, int, int, float);
-	REFLECT_CLASS_MEMFN(A, Member, int, float);
-
-	REFLECT_CLASS_MEMFN(A, Member2, void, char);
-
-	REFLECT_CLASS_MEMVAR(A, int, privateVar);
 };
 
 int main(int argc, char* argv[])
@@ -95,7 +91,19 @@ int main(int argc, char* argv[])
 	////////////////////////////////////////
 	// Reflection testing // TODO: Remove
 	////////////////////////////////////////
-	auto instance = Reflection::Reflective::Create("A", 54.0f, 0.0);
+	Reflection::ReflectedClass instance = Reflection::ReflectedClass("A", 54.0f, 0.0);
 
+	// Variables
+	Logger::Log(LogLevel::Trace, "{0}", instance.Get<int>("privateVar"));
+	int& privateVar = instance.Get<int>("privateVar");
+	privateVar = 7;
+	Logger::Log(LogLevel::Trace, "{0}", instance.Get<int>("privateVar"));
+	instance.Set<int>("privateVar", 100);
+	Logger::Log(LogLevel::Trace, "{0}", instance.Get<int>("privateVar"));
+
+	// Functions
+	Logger::Log(LogLevel::Trace, "{0}", instance.Run<int, float>("Member", 1.0f));
+	Logger::Log(LogLevel::Trace, "{0}", instance.Run<int, int, float>("Member", 69, 71.3f));
+	
 	return 0;
 }
