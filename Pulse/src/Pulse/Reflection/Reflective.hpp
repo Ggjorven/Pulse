@@ -33,7 +33,7 @@ namespace Pulse::Reflection
 		template<typename T>
 		void Set(const std::string& varName, T value)
 		{
-			if (std::is_reference_v<T>)
+			if constexpr (std::is_reference_v<T>)
 				ClassRegistry::Get().SetMemVar(m_ClassName, varName, m_Instance, std::any(std::reference_wrapper<std::decay_t<T>>(value)));
 			else
 				ClassRegistry::Get().SetMemVar(m_ClassName, varName, m_Instance, std::any(value));
@@ -50,12 +50,12 @@ namespace Pulse::Reflection
 		template<typename T, typename ...Args>
 		T Run(const std::string& fnName, Args&& ...args)
 		{
-			if (std::is_reference_v<T>)
+			if constexpr (std::is_reference_v<T>)
 			{
 				T val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(ClassRegistry::Get().RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
 				return val;
 			}
-			else
+			else if constexpr (!std::is_void_v<T>)
 				return std::any_cast<T>(ClassRegistry::Get().RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
 		}
 

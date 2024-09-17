@@ -84,12 +84,16 @@ namespace Pulse::Reflection
 
 	void ClassRegistry::SetMemVar(const std::string& className, const std::string& varName, Reflective* instance, std::any value)
 	{
-		return m_MemberVarSetters[className][varName](instance, value);
+		if (m_MemberVarSetters.contains(className) && m_MemberVarSetters.at(className).contains(varName))
+			m_MemberVarSetters[className][varName](instance, value);
 	}
 
 	std::any ClassRegistry::GetMemVar(const std::string& className, const std::string& varName, Reflective* instance)
 	{
-		return m_MemberVarGetters[className][varName](instance);
+		if (m_MemberVarGetters.contains(className) && m_MemberVarGetters.at(className).contains(varName))
+			return m_MemberVarGetters[className][varName](instance);
+
+		return {};
 	}
 
 	ClassRegistry& ClassRegistry::Get()

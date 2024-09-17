@@ -59,14 +59,16 @@ namespace Pulse
 
 	void TestSuite::_TestEq(bool result, const char* expr, const char* file, int line)
 	{
-		GetTestResults()[GetRunningTest()].Success = result;
-		GetTestResults()[GetRunningTest()].FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
+		TestResult& testResult = GetTestResults()[GetRunningTest()];
+		testResult.Success = result;
+		testResult.FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
 	}
 
 	void TestSuite::_TestResult(bool result, const char* expr, const char* file, int line)
 	{
-		GetTestResults()[GetRunningTest()].Success = result;
-		GetTestResults()[GetRunningTest()].FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
+		TestResult& testResult = GetTestResults()[GetRunningTest()];
+		testResult.Success = result;
+		testResult.FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
 	}
 
 }
