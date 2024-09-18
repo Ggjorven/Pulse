@@ -9,6 +9,8 @@
 
 #if defined(PULSE_PLATFORM_WINDOWS)
 #include <Windows.h>
+#elif defined(PULSE_PLATFORM_LINUX)
+#include <dlfcn.h>
 // TODO: Additional platforms
 #endif
 
@@ -32,6 +34,8 @@ namespace Pulse
 
 #if defined(PULSE_PLATFORM_WINDOWS)
 		HMODULE m_Handle = {};
+#elif defined(PULSE_PLATFORM_LINUX)
+        void* m_Handle = {};
 // TODO: Additional platforms
 #endif
 	};
@@ -41,6 +45,8 @@ namespace Pulse
 	{
 		#if defined(PULSE_PLATFORM_WINDOWS)
 			return (TFunc)GetProcAddress(m_Handle, cFuncName.c_str());
+        #elif defined(PULSE_PLATFORM_LINUX)
+		    return (TFunc)dlsym(m_Handle, cFuncName.c_str());
 		// TODO: Additional platforms
 		#endif
 	}

@@ -52,6 +52,9 @@ namespace Pulse
 		#if defined(PULSE_PLATFORM_WINDOWS)
 		if (m_Handle)
 			FreeLibrary(m_Handle);
+		#elif defined(PULSE_PLATFORM_LINUX)
+        if (m_Handle)
+			dlclose(m_Handle);
 		// TODO: Additional platforms
 		#endif
 	}
@@ -70,8 +73,14 @@ namespace Pulse
 			FreeLibrary(m_Handle);
 
 		m_Handle = LoadLibraryA(CopyOverDll(m_Path).string().c_str());
-		Logger::Assert((bool)m_Handle, "Failed to load dll from path: '{0}'", m_Path.string());
+		Logger::Assert((bool)m_Handle, "Failed to load .dll from path: '{0}'", m_Path.string());
 
+        #elif defined(PULSE_PLATFORM_LINUX)
+		if (m_Handle)
+			dlclose(m_Handle);
+
+		m_Handle = dlopen(CopyOverDll(m_Path).string().c_str(), RTLD_LAZY);
+        Logger::Assert((bool)m_Handle, "Failed to load .so from path: '{0}'", m_Path.string());
 		// TODO: Additional platforms
 		#endif
 

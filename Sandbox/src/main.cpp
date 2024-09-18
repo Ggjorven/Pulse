@@ -5,6 +5,8 @@
 
 #include <Pulse/Test/TestSuite.hpp>
 
+#include <Pulse/Dll/Dll.hpp> // TODO: Remove
+
 // All tests
 #include "Tests/Core.hpp"
 #include "Tests/Enum.hpp"
@@ -46,6 +48,8 @@ int main(int argc, char* argv[])
 	Logger::Init(&LogCallback);
 
 	TestSuite::Run();
+
+    Dll dll("Sandbox/test.so");
 
 	return 0;
 }
