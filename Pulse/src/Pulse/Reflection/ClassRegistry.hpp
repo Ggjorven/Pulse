@@ -86,7 +86,9 @@ namespace Pulse::Reflection
         Map<std::string, Map<std::string, MemberGetFn>> m_MemberVarGetters = {};
     };
 
-
+    // Utils for Dll importing/exporting reflected vars & functions.
+    using GetClassRegistryFn = std::function<ClassRegistry*()>;
+    PULSE_FULL_EXPORT inline ClassRegistry* _CGetClassRegistry() { return &ClassRegistry::Get(); }
 
     ///////////////////////////////////////////////////////////
     // Helper function for creating reflection objects

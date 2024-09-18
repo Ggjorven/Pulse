@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Pulse/Core/Core.hpp"
+
 #include "Pulse/Text/Format.hpp"
 
 #include "Pulse/Test/TestSuite.hpp"
@@ -77,8 +79,14 @@ inline static const char _RunDummy##id = (_Run##id(), 0)
 ///////////////////////////////////////////////////////////
 // Exporting/importing C/C++
 ///////////////////////////////////////////////////////////
-#define PULSE_IMPORT __declspec(dllimport)
-#define PULSE_EXPORT __declspec(dllexport)
+#if defined(PULSE_PLATFORM_WINDOWS)
+    #define PULSE_IMPORT __declspec(dllimport)
+    #define PULSE_EXPORT __declspec(dllexport)
+#elif defined(PULSE_PLATFORM_LINUX) || defined(PULSE_PLATFORM_MACOS)
+    #define PULSE_IMPORT
+    #define PULSE_EXPORT __attribute__((visibility("default")))
+#endif
+
 
 #define PULSE_C_EXPORT extern "C"
 

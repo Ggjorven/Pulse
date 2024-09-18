@@ -12,5 +12,4 @@
 #define TEST(name, body)									\
 inline void _PulseTest_##name()								\
 body														\
-															\
 RUN_FUNCTION(__COUNTER__, ::Pulse::TestSuite::_AddTest, #name, &_PulseTest_##name)

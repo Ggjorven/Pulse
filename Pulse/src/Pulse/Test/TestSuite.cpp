@@ -45,10 +45,10 @@ namespace Pulse
 			
 			// Check results
 			TestResult& result = GetTestResults()[name];
-			if (result.Success)
+			if (result.Message.empty())
 				Logger::Log(LogLevel::Info, "[{0}/{1}] Test '{2}' passed.", testID++, GetTests().size(), name);
 			else
-				Logger::Log(LogLevel::Error, "[{0}/{1}] Test '{2}' failed.\n\tFail message: {3}", testID++, GetTests().size(), name, result.FailMessage);
+				Logger::Log(LogLevel::Error, "[{0}/{1}] Test '{2}' failed.\n\tFail message: {3}", testID++, GetTests().size(), name, result.Message);
 		}
 	}
 
@@ -60,15 +60,17 @@ namespace Pulse
 	void TestSuite::_TestEq(bool result, const char* expr, const char* file, int line)
 	{
 		TestResult& testResult = GetTestResults()[GetRunningTest()];
-		testResult.Success = result;
-		testResult.FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
+		
+		if (result == false)
+			testResult.Message = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
 	}
 
 	void TestSuite::_TestResult(bool result, const char* expr, const char* file, int line)
 	{
 		TestResult& testResult = GetTestResults()[GetRunningTest()];
-		testResult.Success = result;
-		testResult.FailMessage = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
+
+		if (result == false)
+			testResult.Message = Text::Format("{0} failed. \n\tFile: {1}:{2}", expr, file, line);
 	}
 
 }

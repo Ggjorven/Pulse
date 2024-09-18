@@ -14,21 +14,23 @@
 
 static void LogCallback(Pulse::LogLevel level, std::string message)
 {
+	using enum Pulse::LogLevel;
+
 	switch (level)
 	{
-	case Pulse::LogLevel::Trace:
+	case Trace:
 		std::cout << "[Pulse] Trace: " << message << std::endl;
 		break;
-	case Pulse::LogLevel::Info:
+	case Info:
 		std::cout << "[Pulse] Info: " << message << std::endl;
 		break;
-	case Pulse::LogLevel::Warn:
+	case Warn:
 		std::cout << "[Pulse] Warn: " << message << std::endl;
 		break;
-	case Pulse::LogLevel::Error:
+	case Error:
 		std::cout << "[Pulse] Error: " << message << std::endl;
 		break;
-	case Pulse::LogLevel::Fatal:
+	case Fatal:
 		std::cout << "[Pulse] Fatal: " << message << std::endl;
 		break;
 

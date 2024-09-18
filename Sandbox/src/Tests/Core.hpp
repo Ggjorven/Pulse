@@ -9,6 +9,8 @@
 #include <Pulse/Test/Test.hpp>
 
 #include <cstdint>
+#include <list>
+#include <vector>
 
 struct TestClass : public Pulse::RefCounted
 {
@@ -26,7 +28,7 @@ public:
 
 
 
-TEST(NumericSizes, 
+TEST(NumericSizes,
 {
 	TEST_EQ(Pulse::Numeric::Max<Pulse::i8>(), INT8_MAX);
 	TEST_EQ(Pulse::Numeric::Max<Pulse::u64>(), UINT64_MAX);

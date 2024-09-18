@@ -14,8 +14,7 @@ namespace Pulse
 	struct TestResult
 	{
 	public:
-		bool Success = true;
-		std::string FailMessage = {};
+		std::string Message = {};
 	};
 
 	class TestSuite

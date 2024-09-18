@@ -28,11 +28,11 @@
 // Check for proper C++ version
 #if defined(_MSC_VER)
 	#if _MSC_VER < 1929
-		#error Pulse: Compiler doesn't support C++20
+		#error Pulse: Compiler does not support C++20
 	#endif
 #elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
 	#if __cplusplus < 202002L
-		#error Pulse: Compiler doesn't support C++20
+		#error Pulse: Compiler does not support C++20
 	#endif
 #else
 	#error Pulse: Unknown compiler, cannot determine C++20 support.

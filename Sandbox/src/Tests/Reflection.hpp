@@ -32,10 +32,12 @@ public:
 		return 69;
 	}
 
-	[[ PulseRefl::ExportMemFn(public, ReflClass, Member2, void, char) ]]
+	//[[ PulseRefl::ExportMemFn(public, ReflClass, Member2, void, char) ]] // TODO: Fix on linux
 	void Member2(char a)
 	{
 	}
+
+    // TODO: Func with no parameters (methods/ctors)
 
 private:
 	[[ PulseRefl::ExportMemVar(public, ReflClass, int, privateVar) ]]
@@ -67,4 +69,4 @@ TEST(Reflection,
 
 	result = instance.Run<int>("Member", 69, 71.3f);
 	TEST_EQ(result, 420);
-}); 
+});

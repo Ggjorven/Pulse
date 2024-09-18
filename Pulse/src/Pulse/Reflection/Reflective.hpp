@@ -24,7 +24,7 @@ namespace Pulse::Reflection
 	public:
 		template<typename ...Args>
 		ReflectedClass(const std::string& className, Args&& ...args)
-			: m_ClassName(className), m_Instance(ClassRegistry::Get().Instantiate(className, { std::any_cast<Args>(args)... }))
+			: m_ClassName(className), m_Instance(s_Allocator.Instantiate(className, { std::any_cast<Args>(args)... }))
 		{
 		}
 		~ReflectedClass() = default;
@@ -34,15 +34,15 @@ namespace Pulse::Reflection
 		void Set(const std::string& varName, T value)
 		{
 			if constexpr (std::is_reference_v<T>)
-				ClassRegistry::Get().SetMemVar(m_ClassName, varName, m_Instance, std::any(std::reference_wrapper<std::decay_t<T>>(value)));
+				s_Allocator.SetMemVar(m_ClassName, varName, m_Instance, std::any(std::reference_wrapper<std::decay_t<T>>(value)));
 			else
-				ClassRegistry::Get().SetMemVar(m_ClassName, varName, m_Instance, std::any(value));
+				s_Allocator.SetMemVar(m_ClassName, varName, m_Instance, std::any(value));
 		}
 
 		template<typename T>
 		T& Get(const std::string& varName)
 		{
-			T& val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(ClassRegistry::Get().GetMemVar(m_ClassName, varName, m_Instance));
+			T& val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(s_Allocator.GetMemVar(m_ClassName, varName, m_Instance));
 			return val;
 		}
 
@@ -52,16 +52,20 @@ namespace Pulse::Reflection
 		{
 			if constexpr (std::is_reference_v<T>)
 			{
-				T val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(ClassRegistry::Get().RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
+				T val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(s_Allocator.RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
 				return val;
 			}
 			else if constexpr (!std::is_void_v<T>)
-				return std::any_cast<T>(ClassRegistry::Get().RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
+				return std::any_cast<T>(s_Allocator.RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
 		}
+
+		inline static void SetAllocator(ClassRegistry& registry) { s_Allocator = registry; }
 
 	private:
 		std::string m_ClassName;
 		ClassRegistry::ValueContainer m_Instance;
+
+		inline static ClassRegistry& s_Allocator = ClassRegistry::Get();
 	};
 
 }
