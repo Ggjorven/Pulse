@@ -120,22 +120,24 @@ namespace Pulse::Reflection
     )
 
     // Helper function that only works when retType is not void.
-template <typename RetType, typename FuncType, typename ClsType, typename... Args>
-std::enable_if_t<!std::is_void_v<RetType>, std::any>
-CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
-{
-    auto result = ::Pulse::Utils::UseNativeArgTypesInSMemFunc<std::decay_t<FuncType>, ClsType, Args...>(std::forward<FuncType>(func), obj, args);
-    return std::make_any<decltype(result)>(result);
-}
+    /*
+    template <typename RetType, typename FuncType, typename ClsType, typename... Args>
+    std::enable_if_t<!std::is_void_v<RetType>, std::any>
+    CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
+    {
+        auto result = ::Pulse::Utils::UseNativeArgTypesInSMemFunc<std::decay_t<FuncType>, ClsType, Args...>(std::forward<FuncType>(func), obj, args);
+        return std::make_any<decltype(result)>(result);
+    }
 
-// Void overload
-template <typename RetType, typename FuncType, typename ClsType, typename... Args>
-std::enable_if_t<std::is_void_v<RetType>, std::any>
-CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
-{
-    ::Pulse::Utils::UseNativeArgTypesInSMemFunc<std::decay_t<FuncType>, ClsType, Args...>(std::forward<FuncType>(func), obj, args);
-    return {}; // Return an empty std::any since there's no return value
-}
+    // Void overload
+    template <typename RetType, typename FuncType, typename ClsType, typename... Args>
+    std::enable_if_t<std::is_void_v<RetType>, std::any>
+    CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
+    {
+        ::Pulse::Utils::UseNativeArgTypesInSMemFunc<std::decay_t<FuncType>, ClsType, Args...>(std::forward<FuncType>(func), obj, args);
+        return {}; // Return an empty std::any since there's no return value
+    }
+    */
 
     // Example usage: REFLECT_CLASS_MEMFN(clsName, MyMemFunc, char, int, char*);
     #define PULSE_REFLECT_CLASS_MEMFN(cls, fnName, retType, ...)                                                                            \
@@ -155,8 +157,7 @@ CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
             }                                                                                                                               \
             else                                                                                                                            \
             {                                                                                                                               \
-                /* Doesn't work on linux? Even though there's a constexpr branch above it. */                                               \
-                return CallWithReturn<retType>(std::move(func), obj, args);                                                                 \
+                return std::any(::Pulse::Utils::UseNativeArgTypesInSMemFunc<decltype(func), cls, __VA_ARGS__>(std::move(func), obj, args)); \
             }                                                                                                                               \
                                                                                                                                             \
             return {};                                                                                                                      \

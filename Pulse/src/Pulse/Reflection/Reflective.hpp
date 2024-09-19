@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Pulse/Core/Defines.hpp"
-
 #include "Pulse/Core/Ref.hpp"
 
 #include "Pulse/Reflection/ClassRegistry.hpp"
+
+#include "Pulse/Types/TypeUtils.hpp"
 
 #include <string>
 
@@ -34,7 +35,7 @@ namespace Pulse::Reflection
 		void Set(const std::string& varName, T value)
 		{
 			if constexpr (std::is_reference_v<T>)
-				s_Allocator.SetMemVar(m_ClassName, varName, m_Instance, std::any(std::reference_wrapper<std::decay_t<T>>(value)));
+				s_Allocator.SetMemVar(m_ClassName, varName, m_Instance, std::any(std::reference_wrapper<Types::Clean<T>>(value)));
 			else
 				s_Allocator.SetMemVar(m_ClassName, varName, m_Instance, std::any(value));
 		}
@@ -42,7 +43,7 @@ namespace Pulse::Reflection
 		template<typename T>
 		T& Get(const std::string& varName)
 		{
-			T& val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(s_Allocator.GetMemVar(m_ClassName, varName, m_Instance));
+			T& val = std::any_cast<std::reference_wrapper<Types::Clean<T>>>(s_Allocator.GetMemVar(m_ClassName, varName, m_Instance));
 			return val;
 		}
 
@@ -52,7 +53,7 @@ namespace Pulse::Reflection
 		{
 			if constexpr (std::is_reference_v<T>)
 			{
-				T val = std::any_cast<std::reference_wrapper<std::decay_t<T>>>(s_Allocator.RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
+				T val = std::any_cast<std::reference_wrapper<Types::Clean<T>>>(s_Allocator.RunMember(m_ClassName, fnName, m_Instance, { std::any_cast<Args>(args)... }));
 				return val;
 			}
 			else if constexpr (!std::is_void_v<T>)

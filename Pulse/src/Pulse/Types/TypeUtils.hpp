@@ -11,6 +11,9 @@ namespace Pulse::Types
     //////////////////////////////////////////////////
     // Other
     //////////////////////////////////////////////////
+    template<typename T>
+    using Clean = std::decay_t<T>;
+
     template <typename Base, typename Derived>
     struct SameImpl : std::is_same<Base, Derived> {};
 
