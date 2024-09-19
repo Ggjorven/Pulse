@@ -1,5 +1,7 @@
 #pragma once
 
+#if 0 // Reflection should not be used currently since it doesn't work on linux
+
 #include "Pulse/Reflection/ClassRegistry.hpp"
 
 // The Empty var will be stripped by the compiler (as long as you don't use it ;))
@@ -32,3 +34,5 @@
 	PULSE_REFLECT_CLASS_MEMVAR(cls, type, name);					\
 	access:															\
 	[[
+
+#endif

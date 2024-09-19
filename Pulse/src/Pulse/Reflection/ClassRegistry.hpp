@@ -48,7 +48,7 @@ namespace Pulse::Reflection
     public:
         using ValueContainer = Reflective*;
         using ArgsContainer = const std::vector<std::any>&;
-        
+
         template<typename Key, typename Value, typename Hash = std::hash<Key>>
         using Map = std::unordered_map<Key, Value, Hash>;
 
@@ -119,6 +119,23 @@ namespace Pulse::Reflection
         [](::Pulse::Reflection::Reflective* obj){ delete static_cast<cls*>(obj); }                                                          \
     )
 
+    // Helper function that only works when retType is not void.
+template <typename RetType, typename FuncType, typename ClsType, typename... Args>
+std::enable_if_t<!std::is_void_v<RetType>, std::any>
+CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
+{
+    auto result = ::Pulse::Utils::UseNativeArgTypesInSMemFunc<std::decay_t<FuncType>, ClsType, Args...>(std::forward<FuncType>(func), obj, args);
+    return std::make_any<decltype(result)>(result);
+}
+
+// Void overload
+template <typename RetType, typename FuncType, typename ClsType, typename... Args>
+std::enable_if_t<std::is_void_v<RetType>, std::any>
+CallWithReturn(FuncType&& func, ClsType* obj, const std::vector<std::any>& args)
+{
+    ::Pulse::Utils::UseNativeArgTypesInSMemFunc<std::decay_t<FuncType>, ClsType, Args...>(std::forward<FuncType>(func), obj, args);
+    return {}; // Return an empty std::any since there's no return value
+}
 
     // Example usage: REFLECT_CLASS_MEMFN(clsName, MyMemFunc, char, int, char*);
     #define PULSE_REFLECT_CLASS_MEMFN(cls, fnName, retType, ...)                                                                            \
@@ -138,8 +155,11 @@ namespace Pulse::Reflection
             }                                                                                                                               \
             else                                                                                                                            \
             {                                                                                                                               \
-                return std::any(::Pulse::Utils::UseNativeArgTypesInSMemFunc<decltype(func), cls, __VA_ARGS__>(std::move(func), obj, args)); \
+                /* Doesn't work on linux? Even though there's a constexpr branch above it. */                                               \
+                return CallWithReturn<retType>(std::move(func), obj, args);                                                                 \
             }                                                                                                                               \
+                                                                                                                                            \
+            return {};                                                                                                                      \
         }                                                                                                                                   \
     )
 
@@ -177,6 +197,6 @@ namespace Pulse::Reflection
             auto func = ::Pulse::Utils::ToStatic(&cls::_Reflection_Get##name);                                                              \
             return std::any(std::reference_wrapper(func(obj)));                                                                             \
         }                                                                                                                                   \
-    )                                                                                                                                      
+    )
 
 }

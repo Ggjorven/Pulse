@@ -106,17 +106,19 @@ namespace Pulse
     }
 
     template<typename Func, typename ClassType, typename ...Args>
-    auto Utils::UseNativeArgTypesInSMemFunc(Func&& func, ClassType* instance, const std::vector<std::any>& args) -> typename Pulse::Types::FunctionTraits<Func>::ReturnType
+auto Utils::UseNativeArgTypesInSMemFunc(Func&& func, ClassType* instance, const std::vector<std::any>& args) -> typename Pulse::Types::FunctionTraits<Func>::ReturnType
+{
+    Logger::Assert((args.size() == sizeof...(Args)), "Argument size mismatch.");
+
+    using ReturnType = typename Pulse::Types::FunctionTraits<Func>::ReturnType;
+
+    auto unpackArgs = [&]<std::size_t... Is>(ClassType* instance, std::index_sequence<Is...>) -> ReturnType
     {
-        Logger::Assert((args.size() == sizeof...(Args)), "Argument size mismatch.");
+        return func(instance, std::any_cast<Args>(args[Is])...);
+    };
 
-        using ReturnType = typename Pulse::Types::FunctionTraits<Func>::ReturnType;
-        auto unpackArgs = [&]<std::size_t... Is>(ClassType* instance, std::index_sequence<Is...>) -> ReturnType
-        {
-            return func(instance, std::any_cast<Args>(args[Is])...);
-        };
+    return unpackArgs(instance, std::index_sequence_for<Args...>());
+}
 
-        return unpackArgs(instance, std::index_sequence_for<Args...>());
-    }
 
 }

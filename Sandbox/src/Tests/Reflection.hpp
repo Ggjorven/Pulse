@@ -1,5 +1,7 @@
 #pragma once
 
+#if 0 // Reflection should not be used currently since it doesn't work on linux
+
 #include <Pulse/Core/Defines.hpp>
 
 #include <Pulse/Reflection/Attributes.hpp>
@@ -70,3 +72,5 @@ TEST(Reflection,
 	result = instance.Run<int>("Member", 69, 71.3f);
 	TEST_EQ(result, 420);
 });
+
+#endif
