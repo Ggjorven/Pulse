@@ -2,105 +2,101 @@
 
 #include "../../../vendor/magic_enum/include/magic_enum/magic_enum_all.hpp"
 
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
 namespace Pulse::Enum
 {
-
-	using namespace magic_enum;
-
+	
 	///////////////////////////////////////////////////////////
 	// Naming
 	///////////////////////////////////////////////////////////
 	template<auto V>
-	inline constexpr auto Name() noexcept -> detail::enable_if_t<decltype(V), std::string_view>
+	inline constexpr auto Name() noexcept -> magic_enum::detail::enable_if_t<decltype(V), std::string_view>
 	{
-		return enum_name<V>();
+		return magic_enum::enum_name<V>();
 	}
 
-	template<typename E, detail::enum_subtype S = detail::subtype_v<E>>
-	[[nodiscard]] inline constexpr auto Name(E value) noexcept -> detail::enable_if_t<E, std::string_view>
+	template<typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>>
+	[[nodiscard]] inline constexpr auto Name(E value) noexcept -> magic_enum::detail::enable_if_t<E, std::string_view>
 	{
-		return enum_name<E>(value);
+		return magic_enum::enum_name<E>(value);
 	}
 
-	template<detail::enum_subtype S, typename E>
-	[[nodiscard]] inline constexpr auto Name(E value) -> detail::enable_if_t<E, std::string_view>
+	template<magic_enum::detail::enum_subtype S, typename E>
+	[[nodiscard]] inline constexpr auto Name(E value) -> magic_enum::detail::enable_if_t<E, std::string_view>
 	{
-		return enum_name<S, E>(value);
+		return magic_enum::enum_name<S, E>(value);
 	}
 
 	template <typename E>
-	[[nodiscard]] inline constexpr auto TypeName() noexcept -> detail::enable_if_t<E, string_view>
+	[[nodiscard]] inline constexpr auto TypeName() noexcept -> magic_enum::detail::enable_if_t<E, std::string_view>
 	{
-		return enum_type_name<E>();
+		return magic_enum::enum_type_name<E>();
 	}
 
 	///////////////////////////////////////////////////////////
 	// Values
 	///////////////////////////////////////////////////////////
-	template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
-	[[nodiscard]] inline constexpr auto Values() noexcept -> detail::enable_if_t<E, detail::values_t<E, S>>
+	template <typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>>
+	[[nodiscard]] inline constexpr auto Values() noexcept -> magic_enum::detail::enable_if_t<E, magic_enum::detail::values_t<E, S>>
 	{
-		return enum_values<E, S>();
+		return magic_enum::enum_values<E, S>();
 	}
 
 	///////////////////////////////////////////////////////////
 	// Elements
 	///////////////////////////////////////////////////////////
-	template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
-	[[nodiscard]] inline constexpr auto ElementCount() noexcept -> detail::enable_if_t<E, std::size_t>
+	template <typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>>
+	[[nodiscard]] inline constexpr auto ElementCount() noexcept -> magic_enum::detail::enable_if_t<E, std::size_t>
 	{
 		return magic_enum::enum_count<E, S>();
 	}
 
-	template <typename E, detail::enum_subtype S = detail::subtype_v<E>, typename F, detail::enable_if_t<E, int> = 0>
+	template <typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>, typename F, magic_enum::detail::enable_if_t<E, int> = 0>
 	inline constexpr auto ForEach(F&& f)
 	{
-		return enum_for_each<E, S, F>(f);
+		return magic_enum::enum_for_each<E, S, F>(f);
 	}
 
 	///////////////////////////////////////////////////////////
 	// Checks
 	///////////////////////////////////////////////////////////
-	template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
-	[[nodiscard]] inline constexpr auto Contains(E value) noexcept -> detail::enable_if_t<E, bool>
+	template <typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>>
+	[[nodiscard]] inline constexpr auto Contains(E value) noexcept -> magic_enum::detail::enable_if_t<E, bool>
 	{
-		return enum_contains<E, S>(value);
+		return magic_enum::enum_contains<E, S>(value);
 	}
 
-	template <detail::enum_subtype S, typename E>
-	[[nodiscard]] inline constexpr auto Contains(E value) noexcept -> detail::enable_if_t<E, bool>
+	template <magic_enum::detail::enum_subtype S, typename E>
+	[[nodiscard]] inline constexpr auto Contains(E value) noexcept -> magic_enum::detail::enable_if_t<E, bool>
 	{
-		return enum_contains<S, E>(value);
+		return magic_enum::enum_contains<S, E>(value);
 	}
 
-	template <typename E, detail::enum_subtype S = detail::subtype_v<E>>
-	[[nodiscard]] constexpr auto Contains(underlying_type_t<E> value) noexcept -> detail::enable_if_t<E, bool>
+	template <typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>>
+	[[nodiscard]] constexpr auto Contains(magic_enum::underlying_type_t<E> value) noexcept -> magic_enum::detail::enable_if_t<E, bool>
 	{
-		return enum_contains<E, S>(value);
+		return magic_enum::enum_contains<E, S>(value);
 	}
 
-	template <typename E, detail::enum_subtype S = detail::subtype_v<E>, typename BinaryPredicate = std::equal_to<>>
-	[[nodiscard]] inline constexpr auto Contains(string_view value, BinaryPredicate p = {}) noexcept(detail::is_nothrow_invocable<BinaryPredicate>()) -> detail::enable_if_t<E, bool, BinaryPredicate>
+	template <typename E, magic_enum::detail::enum_subtype S = magic_enum::detail::subtype_v<E>, typename BinaryPredicate = std::equal_to<>>
+	[[nodiscard]] inline constexpr auto Contains(std::string_view value, BinaryPredicate p = {}) noexcept(magic_enum::detail::is_nothrow_invocable<BinaryPredicate>()) -> magic_enum::detail::enable_if_t<E, bool, BinaryPredicate>
 	{
-		return enum_contains<E, S>(value);
+		return magic_enum::enum_contains<E, S>(value);
 	}
 
 	///////////////////////////////////////////////////////////
 	// Fusing
 	///////////////////////////////////////////////////////////
     // Size in bytes (it returns a type with double the size)
-    template<std::size_t Size, typename Enable = void>
+    template<size_t Size, typename Enable = void>
     struct FuseType;
 
-    template<>
-    struct FuseType<1> { using Type = uint16_t; };
-    template<>
-    struct FuseType<2> { using Type = uint32_t; };
-    template<>
-    struct FuseType<4> { using Type = uint64_t; };
+    template<> struct FuseType<1> { using Type = uint16_t; };
+    template<> struct FuseType<2> { using Type = uint32_t; };
+    template<> struct FuseType<4> { using Type = uint64_t; };
 
 	/*
 		Example:
@@ -123,49 +119,48 @@ namespace Pulse::Enum
     }
 
 	///////////////////////////////////////////////////////////
-	// Bitwise operators
+	// Bitwise operator namespace
 	///////////////////////////////////////////////////////////
 	namespace Bitwise
 	{
 
-		template <typename E, detail::enable_if_t<E, int> = 0>
+		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
 		inline constexpr E operator ~ (E rhs) noexcept
 		{
-			return static_cast<E>(~static_cast<underlying_type_t<E>>(rhs));
+			return static_cast<E>(~static_cast<std::underlying_type_t<E>>(rhs));
 		}
 
-		template <typename E, detail::enable_if_t<E, int> = 0>
+		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
 		inline constexpr E operator | (E lhs, E rhs) noexcept
 		{
-			return static_cast<E>(static_cast<underlying_type_t<E>>(lhs) | static_cast<underlying_type_t<E>>(rhs));
+			return static_cast<E>(static_cast<std::underlying_type_t<E>>(lhs) | static_cast<std::underlying_type_t<E>>(rhs));
 		}
 
-		template <typename E, detail::enable_if_t<E, int> = 0>
-        inline constexpr E operator&(E lhs, E rhs) noexcept
+		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
+        inline constexpr E operator & (E lhs, E rhs) noexcept
         {
-            return static_cast<E>(static_cast<underlying_type_t<E>>(lhs) & static_cast<underlying_type_t<E>>(rhs));
+            return static_cast<E>(static_cast<std::underlying_type_t<E>>(lhs) & static_cast<std::underlying_type_t<E>>(rhs));
         }
 
-		template <typename E, detail::enable_if_t<E, int> = 0>
+		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
 		inline constexpr E operator ^ (E lhs, E rhs) noexcept
 		{
-			return static_cast<E>(static_cast<underlying_type_t<E>>(lhs) ^ static_cast<underlying_type_t<E>>(rhs));
+			return static_cast<E>(static_cast<std::underlying_type_t<E>>(lhs) ^ static_cast<std::underlying_type_t<E>>(rhs));
 		}
 
-		template <typename E, detail::enable_if_t<E, int> = 0>
+		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
 		inline constexpr E& operator |= (E& lhs, E rhs) noexcept
 		{
 			return lhs = (lhs | rhs);
 		}
 
-        template <typename E, detail::enable_if_t<E, int> = 0>
-        inline constexpr E& operator&=(E& lhs, E rhs) noexcept
+        template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
+        inline constexpr E& operator &= (E& lhs, E rhs) noexcept
         {
             return lhs = (lhs & rhs);
         }
 
-
-		template <typename E, detail::enable_if_t<E, int> = 0>
+		template <typename E, magic_enum::detail::enable_if_t<E, int> = 0>
 		inline constexpr E& operator ^= (E& lhs, E rhs) noexcept
 		{
 			return lhs = (lhs ^ rhs);
@@ -173,6 +168,9 @@ namespace Pulse::Enum
 
 	}
 
+	///////////////////////////////////////////////////////////
+	// Bitwise operator defines
+	///////////////////////////////////////////////////////////
     // From https://github.com/Reputeless/EnumBitmask.git CC0-1.0 Universal LICENSE
     namespace EnumBitmask
     {
@@ -198,44 +196,44 @@ namespace Pulse::Enum
         EnumWrapper(Enum e)->EnumWrapper<Enum>;
     }
 
-    #define PULSE_BIT_OPERATORS(ENUM)								    \
-	static_assert(std::is_enum_v<ENUM>, "ENUM must be an enum type");	\
+    #define PULSE_BIT_OPERATORS(e)										\
+	static_assert(std::is_enum_v<e>, "e must be an enum type");			\
 	[[nodiscard]]														\
-	inline constexpr auto operator & (ENUM lhs, ENUM rhs) noexcept		\
+	inline constexpr auto operator & (e lhs, e rhs) noexcept			\
 	{																	\
-		using U = std::underlying_type_t<ENUM>;							\
+		using U = std::underlying_type_t<e>;							\
 		return Pulse::Enum::EnumBitmask::EnumWrapper{					\
-			ENUM(static_cast<U>(lhs) & static_cast<U>(rhs))};			\
+			e(static_cast<U>(lhs) & static_cast<U>(rhs))};				\
 	}																	\
 	[[nodiscard]]														\
-	inline constexpr auto operator |(ENUM lhs, ENUM rhs) noexcept		\
+	inline constexpr auto operator |(e lhs, e rhs) noexcept				\
 	{																	\
-		using U = std::underlying_type_t<ENUM>;							\
+		using U = std::underlying_type_t<e>;							\
 		return Pulse::Enum::EnumBitmask::EnumWrapper{					\
-			ENUM(static_cast<U>(lhs) | static_cast<U>(rhs))};			\
+			e(static_cast<U>(lhs) | static_cast<U>(rhs))};				\
 	}																	\
 	[[nodiscard]]														\
-	inline constexpr auto operator ^(ENUM lhs, ENUM rhs) noexcept		\
+	inline constexpr auto operator ^(e lhs, e rhs) noexcept				\
 	{																	\
-		using U = std::underlying_type_t<ENUM>;							\
+		using U = std::underlying_type_t<e>;							\
 		return Pulse::Enum::EnumBitmask::EnumWrapper{					\
-			ENUM(static_cast<U>(lhs) ^ static_cast<U>(rhs)) };			\
+			e(static_cast<U>(lhs) ^ static_cast<U>(rhs)) };				\
 	}																	\
 	[[nodiscard]]														\
-	inline constexpr ENUM operator ~(ENUM value) noexcept				\
+	inline constexpr e operator ~(e value) noexcept						\
 	{																	\
-		using U = std::underlying_type_t<ENUM>;							\
-		return ENUM(~static_cast<U>(value));							\
+		using U = std::underlying_type_t<e>;							\
+		return e(~static_cast<U>(value));								\
 	}																	\
-	inline constexpr ENUM& operator &=(ENUM& lhs, ENUM rhs) noexcept	\
+	inline constexpr e& operator &=(e& lhs, e rhs) noexcept				\
 	{																	\
 		return lhs = (lhs & rhs);										\
 	}																	\
-	inline constexpr ENUM& operator |=(ENUM& lhs, ENUM rhs) noexcept	\
+	inline constexpr e& operator |=(e& lhs, e rhs) noexcept				\
 	{																	\
 		return lhs = (lhs | rhs);										\
 	}																	\
-	inline constexpr ENUM& operator ^=(ENUM& lhs, ENUM rhs) noexcept	\
+	inline constexpr e& operator ^=(e& lhs, e rhs) noexcept				\
 	{																	\
 		return lhs = (lhs ^ rhs);										\
 	}

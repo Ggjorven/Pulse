@@ -1,10 +1,12 @@
 #pragma once
 
-#include <mutex>
-#include <atomic>
+#include "Pulse/Core/Defines.hpp"
 
 #include "Pulse/Types/Concepts.hpp"
 #include "Pulse/Types/TypeUtils.hpp"
+
+#include <mutex>
+#include <atomic>
 
 namespace Pulse
 {
@@ -36,10 +38,10 @@ namespace Pulse
 		inline void IncRefCount() const { ++m_RefCount; }
 		inline void DecRefCount() const { --m_RefCount; }
 
-		inline uint32_t GetRefCount() const { return m_RefCount.load(); }
+		inline u32 GetRefCount() const { return m_RefCount.load(); }
 
 	private:
-		mutable std::atomic<uint32_t> m_RefCount = 0;
+		mutable std::atomic<u32> m_RefCount = 0;
 
 		template<typename T>
 		friend class Ref;

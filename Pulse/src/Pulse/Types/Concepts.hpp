@@ -54,6 +54,13 @@ namespace Pulse::Types::Concepts
         { callable(args...) } -> std::same_as<ReturnType>;
     };
 
+    // Integral concept
+    template <typename T>
+    concept Integral = requires(T t)
+    {
+        std::is_integral_v<T>;
+    };
+
     // Concept to check if Derived inherits from base
     template<typename Base, typename Derived>
     concept InheritsFrom = std::is_base_of<Base, Derived>::value;

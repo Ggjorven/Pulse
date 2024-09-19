@@ -9,8 +9,12 @@
 namespace Pulse
 {
 
-	static std::unordered_set<void*> s_LiveReferences = { };
-	static std::mutex s_LiveReferenceMutex = {};
+	// Anonymous namespace to ensure it can't be accessed through extern
+	namespace 
+	{
+		static std::unordered_set<void*> s_LiveReferences = { };
+		static std::mutex s_LiveReferenceMutex = {};
+	}
 
 	namespace RefUtils 
 	{
