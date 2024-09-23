@@ -1,8 +1,8 @@
 #pragma once
 
-#include <random>
+#include "Pulse/Core/Core.hpp"
 
-#include <glm/glm.hpp>
+#include <random>
 
 namespace Pulse 
 {
@@ -10,21 +10,10 @@ namespace Pulse
 	class Random
 	{
 	public:
+		static uint32_t UInt();
+		static uint32_t UInt(uint32_t min, uint32_t max);
 
-		static uint32_t UInt()
-		{
-			return s_Distribution(s_RandomEngine);
-		}
-
-		static uint32_t UInt(uint32_t min, uint32_t max)
-		{
-			return min + (s_Distribution(s_RandomEngine) % (max - min + 1));
-		}
-
-		static float Float()
-		{
-			return (float)s_Distribution(s_RandomEngine) / (float)std::numeric_limits<uint32_t>::max();
-		}
+		static float Float();
 
 	private:
 		static std::mt19937 s_RandomEngine;
