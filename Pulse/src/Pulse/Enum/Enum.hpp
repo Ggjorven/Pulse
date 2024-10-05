@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <utility>
 
+#undef FMT_VERSION
+
 namespace Pulse::Enum
 {
 	
