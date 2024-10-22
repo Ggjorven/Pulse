@@ -4,6 +4,8 @@
 #include "Pulse/Core/Defines.hpp"
 #include "Pulse/Core/Logging.hpp"
 
+#include "Pulse/Memory/Memory.hpp"
+
 #include <memory>
 
 namespace Pulse::Memory
@@ -73,8 +75,7 @@ namespace Pulse::Memory
 			}
 		}
 
-		// Custom std::construct_at
-		T* object = static_cast<T*>(new (static_cast<void*>(m_Offset)) T(std::forward<TArgs>(args)...));
+		T* object = Control::ConstructAt<T>(m_Offset, std::forward<TArgs>(args)...);
 		m_Offset += sizeof(T); // Move the pointer 
 
 		return object;
@@ -83,7 +84,7 @@ namespace Pulse::Memory
 	template<typename T>
 	inline void ArenaAllocator::Destroy(T* object)
 	{
-		std::destroy_at<T>(object);
+		Control::DestroyAt<T>(object);
 	}
 
 	///////////////////////////////////////////////////////////
@@ -91,15 +92,12 @@ namespace Pulse::Memory
 	///////////////////////////////////////////////////////////
 	template<typename T, typename ...TArgs>
 	inline T* DynamicArenaAllocator::Construct(TArgs&& ...args)
-{
-		if ((m_Offsets[(m_Offsets.size() - 1)] + sizeof(T)) > (m_Buffers[(m_Buffers.size() - 1)] + m_Size))
+	{
+		if ((m_Offsets.back() + sizeof(T)) > (m_Buffers.back() + m_Size))
 			AllocateBuffer(m_Size);
 
-		new (static_cast<void*>(m_Offsets[(m_Offsets.size() - 1)])) T(std::forward<TArgs>(args)...);
-
-		// Custom std::construct_at
-		T* object = static_cast<T*>(new (static_cast<void*>(m_Offsets[(m_Offsets.size() - 1)])) T(std::forward<TArgs>(args)...));
-		m_Offsets[(m_Offsets.size() - 1)] += sizeof(T); // Move the pointer 
+		T* object = Control::ConstructAt<T>(m_Offsets.back(), std::forward<TArgs>(args)...);
+		m_Offsets.back() += sizeof(T); // Move the pointer 
 
 		return object;
 	}
@@ -107,7 +105,7 @@ namespace Pulse::Memory
 	template<typename T>
 	inline void DynamicArenaAllocator::Destroy(T* object)
 	{
-		std::destroy_at<T>(object);
+		Control::DestroyAt<T>(object);
 	}
 
 }

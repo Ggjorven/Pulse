@@ -4,7 +4,7 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "off"
+	staticruntime "On"
 	
 	architecture "x86_64"
 	
@@ -39,15 +39,12 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-		staticruntime "on"
 
 	filter "system:linux"
 		systemversion "latest"
-		staticruntime "on"
 
 	filter "system:macosx"
 		systemversion(MacOSVersion)
-		staticruntime "on"
 
 		-- Note: If we don't add the header files to the externalincludedirs
 		-- we can't use <angled> brackets to include files.

@@ -35,15 +35,12 @@ project "Pulse"
 
 	filter "system:windows"
 		systemversion "latest"
-		staticruntime "on"
 
 	filter "system:linux"
 		systemversion "latest"
-		staticruntime "on"
 
 	filter "system:macosx"
 		systemversion(MacOSVersion)
-		staticruntime "on"
 
 		-- Note: XCode only needs the full pchheader path
 		pchheader "src/Pulse/plpch.h"

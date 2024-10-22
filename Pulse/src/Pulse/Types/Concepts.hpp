@@ -12,6 +12,23 @@
 namespace Pulse::Types::Concepts
 {
 
+    template<typename T>
+    concept CopyConstructible = std::is_copy_constructible<T>::value;
+
+    template<typename T>
+    concept MoveConstructible = std::is_move_constructible<T>::value;
+
+    template<typename T>
+    concept Destructible = std::is_destructible<T>::value;
+
+    template<typename T>
+    concept TriviallyDestructible = std::is_trivially_destructible<T>::value;
+
+
+
+    template<typename T>
+    concept Array = std::is_array<T>::value;
+
     // Concept to check if a type T has begin and end methods (aka is iterable)
     template <typename T>
     concept Iterable = requires(T t) 
