@@ -26,7 +26,7 @@ namespace Pulse::Memory
 		T* Construct(TArgs&& ...args);
 
 		template<typename T>
-		void Destroy(T* object);
+		void Destroy(T* object, bool decreaseOffset = false);
 
 	private:
 		const Pulse::u64 m_Size;
@@ -48,7 +48,7 @@ namespace Pulse::Memory
 		T* Construct(TArgs&& ...args);
 
 		template<typename T>
-		void Destroy(T* object);
+		void Destroy(T* object, bool decreaseOffset = false);
 
 	private:
 		void AllocateBuffer(Pulse::u64 size);
@@ -82,9 +82,12 @@ namespace Pulse::Memory
 	}
 
 	template<typename T>
-	inline void ArenaAllocator::Destroy(T* object)
+	inline void ArenaAllocator::Destroy(T* object, bool decreaseOffset)
 	{
 		Control::DestroyAt<T>(object);
+
+		if (decreaseOffset)
+			m_Offset -= sizeof(T);
 	}
 
 	///////////////////////////////////////////////////////////
@@ -103,9 +106,12 @@ namespace Pulse::Memory
 	}
 
 	template<typename T>
-	inline void DynamicArenaAllocator::Destroy(T* object)
+	inline void DynamicArenaAllocator::Destroy(T* object, bool decreaseOffset)
 	{
 		Control::DestroyAt<T>(object);
+
+		if (decreaseOffset)
+			m_Offsets.back() -= sizeof(T);
 	}
 
 }
