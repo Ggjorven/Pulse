@@ -31,7 +31,7 @@ namespace Pulse::Memory
 			auto beg = std::begin(arr);
 			auto end = std::end(arr);
 
-			if constexpr (!Types::Concepts::TriviallyDestructible<Types::IteratorTraits<TArray>::ValueType>)
+			if constexpr (!Types::Concepts::TriviallyDestructible<typename Types::IteratorTraits<TArray>::ValueType>)
 			{
 				for (; beg != end; beg++)
 					DestroyAt(*beg);
