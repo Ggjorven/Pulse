@@ -11,6 +11,8 @@
 namespace Pulse::Memory
 {
 
+	class Control;
+
 	class ArenaAllocator
 	{
 	public:
@@ -33,6 +35,8 @@ namespace Pulse::Memory
 
 		Pulse::byte* m_Buffer;
 		Pulse::byte* m_Offset;
+
+		friend class Control;
 	};
 
 	class DynamicArenaAllocator
@@ -58,6 +62,8 @@ namespace Pulse::Memory
 
 		std::vector<Pulse::byte*> m_Buffers;
 		std::vector<Pulse::byte*> m_Offsets;
+
+		friend class Control;
 	};
 
 	///////////////////////////////////////////////////////////
@@ -75,7 +81,7 @@ namespace Pulse::Memory
 			}
 		}
 
-		T* object = Control::ConstructAt<T>(m_Offset, std::forward<TArgs>(args)...);
+		T* object = Control::ConstructAt<T>(reinterpret_cast<T*>(m_Offset), std::forward<TArgs>(args)...);
 		m_Offset += sizeof(T); // Move the pointer 
 
 		return object;
@@ -99,7 +105,7 @@ namespace Pulse::Memory
 		if ((m_Offsets.back() + sizeof(T)) > (m_Buffers.back() + m_Size))
 			AllocateBuffer(m_Size);
 
-		T* object = Control::ConstructAt<T>(m_Offsets.back(), std::forward<TArgs>(args)...);
+		T* object = Control::ConstructAt<T>(reinterpret_cast<T*>(m_Offsets.back()), std::forward<TArgs>(args)...);
 		m_Offsets.back() += sizeof(T); // Move the pointer 
 
 		return object;
