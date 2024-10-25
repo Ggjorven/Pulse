@@ -28,8 +28,8 @@ namespace Pulse::Utility
 		// Operators
 		operator bool();
 
-		operator T& ();
-		operator const T&() const;
+		explicit operator T& ();
+		explicit operator const T&() const;
 
 		Optional<T> operator = (const T& value);
 
