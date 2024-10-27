@@ -49,7 +49,7 @@ namespace Pulse::Utility
 	///////////////////////////////////////////////////////////
 	template<OptionalT T>
 	Optional<T>::Optional(const T& value)
-		: m_Value(value), m_HasValue(true) {}
+		:  m_HasValue(true), m_Value(value) {}
 
 	///////////////////////////////////////////////////////////
 	// Operators
